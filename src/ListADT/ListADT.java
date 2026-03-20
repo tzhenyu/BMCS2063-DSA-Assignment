@@ -57,7 +57,22 @@ public class ListADT<T> implements ListADTInterface<T>{
 
     @Override
     public boolean remove(T element) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+         Node<T> previous = dummy;
+         Node<T> current = dummy.getNextNode();
+         
+         //Loop until we circle back to the dummy node
+         while (current != dummy){
+             //check if the current node holds the data we want to remove
+             if(current.getData().equals(element)){
+                 //Reroute the previous node's pointer to skip the current node
+                 previous.setNextNode(current.getNextNode());
+                 return true;
+             }
+             //Move pointers forward
+             previous = current;
+             current = current.getNextNode();
+         }
+         return false;
     }
 
     @Override
@@ -71,46 +86,30 @@ public class ListADT<T> implements ListADTInterface<T>{
     }
 
     @Override
-    public boolean isEmpty() { //mahir
-        
-        // the node is empty if and only if the dummy ← dummy
+    public boolean isEmpty() {
+        // the mode is empty if and only if the dummy <- dummy
         return dummy.getNextNode() == dummy;
     }
 
     @Override
-    public void clear() { //mahir
+    public void clear() {
         dummy.setNextNode(dummy);
     }
 
     @Override
-    public void display() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public String display() {
+        //If the dummy points to itself,the list is empty
+        if(dummy.getNextNode() == dummy){
+            return "The list is empty.\n";
+        }
+        StringBuilder output = new StringBuilder();
+        Node<T> current = dummy.getNextNode();
+        
+        while(current != dummy){
+            output.append(current.getData().toString()).append("\n");
+            current = current.getNextNode();
+        }
+        return output.toString();
     }
 
-    @Override
-    public String listWithSort(String exp){ //mahir
-        // check empty or not
-        if(isEmpty()){
-            return "";
-        }
-        // sort it first
-        // we define 2 classes for both string and numeric
-        
-        
-        // list it out
-        
-        return exp;
-    }
-    
-    //circular singly linkedlist with dummy node
-    private String AlphaSort(String exp){
-    
-         return """
-                """;
-    }
-    
-    private int NumSort(int exp){
-    
-         return 0;
-    }
 }

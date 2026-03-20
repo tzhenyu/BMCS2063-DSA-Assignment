@@ -70,5 +70,13 @@ public class Medicine {
         return "Medicine{" + "name=" + name + ", description=" + description + ", batchNumber=" + batchNumber + ", expiryDate=" + expiryDate + ", lastUpdated=" + lastUpdated + '}';
     }
     
-    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        
+        Medicine otherMedicine = (Medicine) obj;
+        // Compare them based on their name (ignoring uppercase/lowercase)
+        return this.name.equalsIgnoreCase(otherMedicine.name);
+    }
 }

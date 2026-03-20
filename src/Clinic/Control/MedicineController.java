@@ -21,12 +21,12 @@ public class MedicineController {
         medicineList.insert(medicine);
     }
     
-    public void deleteMedicine(Medicine medicine) {
-        medicineList.remove(medicine);
+    public boolean deleteMedicine(Medicine medicine) {
+       return medicineList.remove(medicine);
     }
     
-    public void listAllMedicine() {
-        medicineList.display();
+    public String listAllMedicine() {
+      return medicineList.display();
     }
     
     public void searchMedicineByName(Medicine medicineName) {
