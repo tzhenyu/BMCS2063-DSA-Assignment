@@ -9,33 +9,15 @@
  */
 import ListADT.Node;
 import ListADT.ListADT;
-import Clinic.Entity.Medicine;
 import Clinic.Boundary.MedicineBoundary;
 public class Main {
     
     
     public static void main(String[] args) {
-  
-        
-//        ListADT a = new ListADT();
-//        a.insert('a');
-//        a.insert('d');
-//        a.insert('c');
-//        a.insert('b');
-//        // Prints out data, but will stop when loop back to start
-//        a.display();
-//        a.sort();
-//        System.out.println(" ");
-//        a.display();
-           
-        
 //        Initialize Boundary
         MedicineBoundary medicineBoundary = new MedicineBoundary();
         
         medicineBoundary.start();
-        
-        
-        
 //        //Playing with Nodes
 //        Node<String> n1 = new Node<>("apple");
 //        Node<String> n2 = new Node<>("banana");        
@@ -54,7 +36,15 @@ public class Main {
 ////            current = current.getNextNode();
 ////        }
 //        
-
+//        // Prints out data, but will stop when loop back to start
+//        Node<String> start = n1;
+//        Node<String> current = start;
+//        
+//        do {
+//            System.out.println(current.getData());
+//            current = current.getNextNode();
+//        } while (current != start);
+//        
 //        
 //        //Playing with insert()
 //        //Define object

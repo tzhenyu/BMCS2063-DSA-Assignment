@@ -10,24 +10,23 @@ package ListADT;
  * @author katie
  * @author mahir
  * @author jonathan
- * @param <T>
  */
 
 
 
-public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
+public class ListADT<T> implements ListADTInterface<T>{
     
     // We develop "circular" linked list with "dummy" node
     // What is dummy node? check here https://www.youtube.com/watch?v=aloIxnZ4EvY
     
-    private Node<T> dummy; // We declare a dummy node first
+    private Node<T> dummy; // We declare a dummy node first.
     
-    // constructor where we define the linked list with dummy node first
+    // constructor where we define the linked list with dummy node first.
     // it looks like this:
     // dummy <- dummy
     public ListADT() {
-        dummy = new Node<>(null); //defines dummy node with no data
-        dummy.setNextNode(dummy); //point itself, circles back
+        dummy = new Node<>(null); //defines dummy node with no data.
+        dummy.setNextNode(dummy); //point itself, circles back.
     }
     
     @Override
@@ -36,7 +35,7 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
         Node<T> newNode = new Node<>(element); // defines new node
         Node<T> last = dummy; //defines dummy as last node
         
-        // say we have: dummy <- firstnode <- dummy
+        // say we have: dummmy <- firstnode <- dummy
         
         // finds the last, real node
         // dummy <- firstnode <- dummy
@@ -72,154 +71,46 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
     }
 
     @Override
-    public boolean isEmpty() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean isEmpty() { //mahir
+        
+        // the node is empty if and only if the dummy ← dummy
+        return dummy.getNextNode() == dummy;
     }
 
     @Override
-    public void clear() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void clear() { //mahir
+        dummy.setNextNode(dummy);
     }
 
     @Override
     public void display() {
-        
-        
-        Node<T> head = dummy.getNextNode();
-        
-        // if linked list is empty
-        if (head==dummy) {
-            System.out.println("List is empty");
-            return;
-        }
-        
-        do {
-            System.out.println(head.getData());
-            head = head.getNextNode();
-        } while (head != dummy);
-           
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-    
-    
+
     @Override
-    public void sort() {
-        // referenced from: https://www.youtube.com/shorts/USyuCNeCxKU
- 
-        // Step 1: break the circular chain
-        breakCircular();
-
-        // get head node so the dummy node wont be included for the merge sort
-        Node<T> head = dummy.getNextNode();
+    public String listWithSort(String exp){ //mahir
+        // check empty or not
+        if(isEmpty()){
+            return "";
+        }
+        // sort it first
+        // we define 2 classes for both string and numeric
         
-        // Step 2: find the middle of linked list
-        // Step 3: sort and merge the linked list
-        head = mergeSort(head);
         
-        // Step 4: reconnect circular chain
-        mergeCircular(head);
+        // list it out
+        
+        return exp;
     }
     
+    //circular singly linkedlist with dummy node
+    private String AlphaSort(String exp){
     
-    private Node<T> mergeSort(Node<T> element) {
-        // if linked list is empty
-        if (element == null || element.getNextNode() == null)
-            return element;
-        
-        // find the middle of linked list
-        Node<T> middle = getMiddle(element);
-        Node<T> nextOfMiddle = middle.getNextNode();
-        
-        // split linked list to 2 part
-        middle.setNextNode(null);
-        // sort each part
-        Node<T> left = mergeSort(element);
-        Node<T> right = mergeSort(nextOfMiddle);
-        
-        // after sorting, merge it
-        return merge(left, right);
+         return """
+                """;
     }
     
-    private Node<T> getMiddle(Node<T> element) {
-        // got slow pointer and fast pointer
-        // say we got A-B-C-D-E-F
-        // slow: A-B-C
-        // fast: A-C-E
-        // last one from fast: E-F correct, but E-G is null, break
-        
-
-        Node<T> slow = element;
-        Node<T> fast = element;
+    private int NumSort(int exp){
     
-        while (fast.getNextNode() != null && fast.getNextNode().getNextNode() != null) {
-            slow = slow.getNextNode();
-            fast = fast.getNextNode().getNextNode();
-        }   
-        
-        // returns the slow one because when fast reached at the end of the linked list,
-        // the slow one is usually at middle one
-        return slow;
-    }
-
-    private Node<T> merge(Node<T> a, Node<T> b) {
-        // sort and merge
-        
-        //both is for when after split, only got 1 linked list
-        if (a == null) { 
-            return b;
-        }
-        
-        if (b == null) { 
-            return a;
-        }
-
-        Node<T> result;
-        
-        // compare and sort then merge
-        if (a.getData().compareTo(b.getData()) <= 0) {
-            result = a;
-            result.setNextNode(merge(a.getNextNode(), b));
-        } else {
-            result = b;
-            result.setNextNode(merge(a, b.getNextNode()));
-        }
-
-        return result;
-    }
-    
-    private void breakCircular() {
-        // this is to help doing merge sort later
-        
-        Node<T> last = dummy; //defines dummy as last node
-        while (last.getNextNode() != dummy) {
-            last = last.getNextNode();
-        }
-        
-        // sets the last node to null to break circular
-        last.setNextNode(null); 
-        
-        
-    }
-    
-    private void mergeCircular(Node<T> element) {
-        // sets the last node back to dummy to make linked list circular again
-        
-        // if its empty linked list
-        if (element == null) {
-            dummy.setNextNode(dummy);
-            return;
-        }
-        
-        // else,
-        // point dummy to head node
-        dummy.setNextNode(element);
-        
-        Node<T> last = element;
-        
-        // find the last node
-        while (last.getNextNode() != null) {
-            last = last.getNextNode();
-        }
-        // point last node to dummy
-        last.setNextNode(dummy);  
+         return 0;
     }
 }

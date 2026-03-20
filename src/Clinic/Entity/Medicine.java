@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
  *
  * @author zhenyu
  */
-public class Medicine implements Comparable<Medicine> {
+public class Medicine {
 
     private String name;
     private String description;
@@ -67,19 +67,8 @@ public class Medicine implements Comparable<Medicine> {
 
     @Override
     public String toString() {
-        return String.format(
-        "|     Name    | Description |  Batch  |  Expiry  | Last Updated |\n %-13s %-13s %-9s %-12s %-10s",
-        name,
-        description,
-        batchNumber,
-        expiryDate.toLocalDate(),
-        lastUpdated.toLocalDate()
-        );
+        return "Medicine{" + "name=" + name + ", description=" + description + ", batchNumber=" + batchNumber + ", expiryDate=" + expiryDate + ", lastUpdated=" + lastUpdated + '}';
     }
     
-    @Override
-    public int compareTo(Medicine other) {
-        return this.name.compareTo(other.name);
-    }
     
 }

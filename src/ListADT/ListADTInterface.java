@@ -41,17 +41,21 @@ public interface ListADTInterface<T> {
      * Checks whether the list is empty
      * @return true if list has no elements, false otherwise
      */
-    boolean isEmpty();
+    boolean isEmpty(); //mahir
 
     /**
      * Removes all elements from the list
      */
-    void clear();
+    void clear(); //mahir
 
     /**
      * Traverses the list and displays elements in order
      */
     void display();
     
-    void sort();
+    
+    
+    String listWithSort(String by); //mahir
+    
+    
 }

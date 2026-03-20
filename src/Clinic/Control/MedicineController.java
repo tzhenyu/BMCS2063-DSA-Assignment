@@ -33,8 +33,8 @@ public class MedicineController {
         medicineList.search(medicineName);
     }
     
-    public void sortMedicine() {
-        medicineList.sort();
+    public void sortMedicine(String by) {
+        
     }
     
 }

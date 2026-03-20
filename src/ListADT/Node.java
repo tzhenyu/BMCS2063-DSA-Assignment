@@ -38,6 +38,8 @@ public class Node<T> {
     public T getData() {
         return data;
     }
-    
-    
+
+    public void setNext(Node<T> next) {
+        this.next = next;
+    }
 }
