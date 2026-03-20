@@ -1,0 +1,69 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+
+/**
+ *
+ * @author zhenyu
+ */
+import ListADT.Node;
+import ListADT.ListADT;
+import Clinic.Entity.Medicine;
+import Clinic.Boundary.MedicineBoundary;
+public class Main {
+    
+    
+    public static void main(String[] args) {
+  
+        
+//        ListADT a = new ListADT();
+//        a.insert('a');
+//        a.insert('d');
+//        a.insert('c');
+//        a.insert('b');
+//        // Prints out data, but will stop when loop back to start
+//        a.display();
+//        a.sort();
+//        System.out.println(" ");
+//        a.display();
+           
+        
+//        Initialize Boundary
+        MedicineBoundary medicineBoundary = new MedicineBoundary();
+        
+        medicineBoundary.start();
+        
+        
+        
+//        //Playing with Nodes
+//        Node<String> n1 = new Node<>("apple");
+//        Node<String> n2 = new Node<>("banana");        
+//        Node<String> n3 = new Node<>("cidar");        
+//        
+//        // Circular linked list
+//        n1.setNextNode(n2);
+//        n2.setNextNode(n3);
+//        n3.setNextNode(n1);
+//        
+////        //Print out data, will cause infinite loop
+////        Node<String> current = n1;
+////        
+////        while (current != null) { 
+////            System.out.println(current.getData());
+////            current = current.getNextNode();
+////        }
+//        
+
+//        
+//        //Playing with insert()
+//        //Define object
+//        ListADT<String> patient = new ListADT<>();
+//        
+//        patient.insert("your mama");
+//        patient.insert("your baba");
+//        
+//        patient.display(); //someone implement this!
+    }
+}
+
