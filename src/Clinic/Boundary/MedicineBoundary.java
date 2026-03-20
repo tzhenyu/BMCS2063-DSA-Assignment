@@ -36,7 +36,7 @@ public class MedicineBoundary {
             switch (choice) {
                 case 1 -> addMedicine();
                 case 2 -> deleteMedicine();
-                case 3 -> listMedicine();
+                case 3 -> controller.listAllMedicine();
                 case 4 -> searchMedicine();
                 case 5 -> sortMedicine();
                 case 6 -> {
@@ -74,10 +74,6 @@ public class MedicineBoundary {
 
     private void sortMedicine() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    private void listMedicine() {
-        controller.listAllMedicine();
     }
     
 }
