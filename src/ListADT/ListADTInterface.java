@@ -8,7 +8,7 @@ package ListADT;
  *
  * @author zhenyu
  */
-public interface ListADTInterface<T> {
+public interface ListADTInterface<T> extends Iterable<T>{
 
     /** 
      * Inserts a new element in the list in sorted order
@@ -52,4 +52,7 @@ public interface ListADTInterface<T> {
      * Traverses the list and displays elements in order
      */
     String display();
+    
+    void sort();
+    
 }

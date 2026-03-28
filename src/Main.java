@@ -12,7 +12,6 @@ import ListADT.ListADT;
 import Clinic.Boundary.MedicineBoundary;
 public class Main {
     
-    
     public static void main(String[] args) {
 //        Initialize Boundary
         MedicineBoundary medicineBoundary = new MedicineBoundary();
