@@ -6,20 +6,20 @@ package Clinic.Boundary;
 import Clinic.Control.MedicineController;
 import Clinic.Entity.Medicine;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Comparator;
 import java.util.Scanner;
 /**
  *
  * @author zhenyu
  */
 public class MedicineBoundary {
-    // 
+     
     String regex = "^MAL\\d{8}[AXTNH][CERSYZ]?$";
-    
     private static final String ROW_FORMAT = "| %-25s | %-35s | %-8s | %-13s | %-11s | %-12s |%n";
-    private static final String FILENAME = "src/medicine.csv";
-            
+        
     private MedicineController controller;
     private Scanner scanner;
     
@@ -28,17 +28,27 @@ public class MedicineBoundary {
         scanner = new Scanner(System.in);
     }
     
+    public void loadFile() {
+        controller.loadFile();
+    }
+    
+    public void saveFile() {
+        controller.saveFile();
+    }
+    
     public void start() {
-        controller.loadFile(FILENAME);
+        loadFile();
+        menu();
+    }
         
+    public void menu() {
+        clearConsole();
         while (true) {
             System.out.println("\n--- Medicine Management ---");
             System.out.println("1. Add Medicine");
             System.out.println("2. Delete Medicine");
-            System.out.println("3. List All Medicines");
-            System.out.println("4. Search Medicine");
-            System.out.println("5. Sort Medicines");
-            System.out.println("6. Exit");
+            System.out.println("3. View Medicines");
+            System.out.println("4. Exit");
             System.out.print("Select option: ");
 
             int choice = scanner.nextInt();
@@ -48,19 +58,15 @@ public class MedicineBoundary {
                 case 1 -> addMedicine();
                 case 2 -> deleteMedicine();
                 case 3 -> viewMedicine();
-                case 4 -> searchMedicine();
-                case 5 -> sortMedicine();
-                case 6 -> {
-                    System.out.println("Exiting...");
-                    controller.saveFile(FILENAME);
-                    return;
-                }
+                case 4 -> exit();
                 default -> System.out.println("Invalid option");
             }
         }
     }
 
+
     private void addMedicine() {
+        clearConsole();
         System.out.print("Name: ");
         String name = scanner.nextLine();
         
@@ -78,15 +84,17 @@ public class MedicineBoundary {
         
         // referenced from https://stackoverflow.com/questions/42763103/convert-string-yyyy-mm-dd-to-localdatetime
         LocalDate expiryDate = null;
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         LocalDate today = LocalDate.now();
+
+        DateTimeFormatter expiryDateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         
+
         while (expiryDate == null) {
             System.out.print("Expiry Date (YYYYMMDD): ");
             // trim is used to remove the whitespace before and after
             String date = scanner.nextLine().trim();     
             try {
-                LocalDate parseDate = LocalDate.parse(date, dateFormatter);
+                LocalDate parseDate = LocalDate.parse(date, expiryDateFormatter);
                 
                 if (parseDate.isBefore(today)) {
                     System.out.println("Invalid: Expiry date cannot be in the past. Today is " + today);    
@@ -107,13 +115,15 @@ public class MedicineBoundary {
         }
         
         controller.insertMedicine(new Medicine(
-            name, desc, quantity, registrationNum, expiryDate, java.time.LocalDate.now()
+            name, desc, quantity, registrationNum, expiryDate, LocalDateTime.now()
         ));
 
         System.out.println("Medicine added.");
+        clearConsole();
     }
 
 private void deleteMedicine() {
+        clearConsole();
         System.out.print("Enter the name of the medicine to delete: ");
         String searchName = scanner.nextLine();
 
@@ -132,20 +142,69 @@ private void deleteMedicine() {
     }
 
     private void viewMedicine() {
+        clearConsole();
         //Print the UI
         System.out.printf(ROW_FORMAT, "NAME", "DESCRIPTION", "QUANTITY", "REG. NUM", "EXPIRY DATE", "LAST UPDATED");
                     
         //Fetch the clipboard of text and immediately print it out
-        System.out.println(controller.listAllMedicine());
-        
+        System.out.println(controller.viewMedicine());
+        controller.checkStock();
+        sortMedicine();
         
     }
+    
     private void searchMedicine() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        clearConsole();
+        System.out.print("Search: ");
+        // trim is used to remove the whitespace before and after
+        String query = scanner.nextLine().trim();  
+        controller.searchAndDisplay(query);
     }
 
     private void sortMedicine() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        while(true) {
+            System.out.println("-- SORT OPTIONS ---------------------------------------------------------------------------------------------------------------");
+            System.out.print(" [1] Name");
+            System.out.print(" [2] Description");
+            System.out.print(" [3] Quantity");
+            System.out.print(" [4] Registration Number");
+            System.out.print(" [5] Expiry Date");
+            System.out.print(" [6] Last Updated");
+            System.out.print(" \n [7] Search");
+            System.out.print(" [8] Back to Main Menu");
+
+            System.out.print("\nEnter choice: ");
+
+            int choice = scanner.nextInt();
+                scanner.nextLine(); // reading choice
+                
+            //referenced from https://www.geeksforgeeks.org/java/java-comparator-interface/
+            switch (choice) {
+                case 1 -> controller.sortMedicine(Comparator.comparing(Medicine::getName)); 
+                case 2 -> controller.sortMedicine(Comparator.comparing(Medicine::getDescription));
+                case 3 -> controller.sortMedicine(Comparator.comparing(Medicine::getQuantity));
+                case 4 -> controller.sortMedicine(Comparator.comparing(Medicine::getRegistrationNumber));
+                case 5 -> controller.sortMedicine(Comparator.comparing(Medicine::getExpiryDate));
+                case 6 -> controller.sortMedicine(Comparator.comparing(Medicine::getLastUpdated));
+                case 7 -> searchMedicine();
+                case 8 -> {menu(); return;}
+                default -> System.out.println("Invalid option.");
+            }
+
+            //list the medicine list after the sort
+            viewMedicine();
+        }
     }
     
+    private void exit() {
+        System.out.println("Exiting...");
+        saveFile();
+        System.exit(0);
+    }
+    
+    public static void clearConsole() {
+        for (int i = 0; i < 50; i++) { // Print 50 blank lines
+            System.out.println();
+        }
+    }
 }

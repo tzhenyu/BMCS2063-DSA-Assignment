@@ -5,28 +5,37 @@
 package Clinic.Entity;
 
 import java.time.LocalDate;
+import StorageHandler.CSVHandler;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 /**
  *
  * @author zhenyu
  */
-public class Medicine {
 
-    private static final String ROW_FORMAT = "| %-25s | %-35s | %-8s | %-13s | %-11s | %-12s |%n";
+// make medicine comparable for sort purpose
+public class Medicine implements Comparable<Medicine>, CSVHandler<Medicine> {
+
+    private static final String ROW_FORMAT = "| %-25s | %-35s | %-8s | %-13s | %-11s | %-16s |%n";
 
     private String name;
     private String description;
     private int quantity;
     private String registrationNum;
     private LocalDate expiryDate;
-    private LocalDate lastUpdated;
+    private LocalDateTime lastUpdated;
 
-    public Medicine(String name, String description,int quantity, String registrationNum, LocalDate expiryDate, LocalDate lastUpdated) {
+    public Medicine(String name, String description,int quantity, String registrationNum, LocalDate expiryDate, LocalDateTime lastUpdated) {
         this.name = name;
         this.description = description;
         this.quantity = quantity;
         this.registrationNum = registrationNum;
         this.expiryDate = expiryDate;
         this.lastUpdated = lastUpdated;
+    }
+    
+    public Medicine() {
+        
     }
 
     public String getName() {
@@ -61,11 +70,11 @@ public class Medicine {
         this.expiryDate = expiryDate;
     }
 
-    public LocalDate getLastUpdated() {
+    public LocalDateTime getLastUpdated() {
         return lastUpdated;
     }
 
-    public void setLastUpdated(LocalDate lastUpdated) {
+    public void setLastUpdated(LocalDateTime lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 
@@ -79,6 +88,9 @@ public class Medicine {
 
     @Override
     public String toString() {
+        
+        DateTimeFormatter lastUpdateDateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
         // Define the format: 5 columns, each 20 characters wide, left-aligned
         // Separated by the "|" pipe character for a table look
 
@@ -90,11 +102,13 @@ public class Medicine {
             String.valueOf(quantity), 
             registrationNum, 
             expiryDate, 
-            lastUpdated
+            lastUpdated.format(lastUpdateDateFormatter)
         );
     }
     
+    @Override
     public int compareTo(Medicine other) {
+        //default sort by name
         return this.name.compareTo(other.name);
     }
     
@@ -105,10 +119,39 @@ public class Medicine {
         
         Medicine otherMedicine = (Medicine) obj;
         // Compare them based on their name (ignoring uppercase/lowercase)
-        return this.name.equalsIgnoreCase(otherMedicine.name);
+        return this.name.toLowerCase().contains(otherMedicine.name.toLowerCase());
     }
 
+    @Override
     public String toCSV() {
         return (name + ";" + description + ";" + String.valueOf(quantity) + ";" + registrationNum + ";" + expiryDate + ";" + lastUpdated);
     }
+    
+    @Override
+    public Medicine fromCSV(String[] field) {
+        // 1. Data Cleaning (The same logic from your loop)
+        String name = field[0].trim();
+        String description = field[1].trim();
+        int quantity = Integer.parseInt(field[2].trim());
+        String regNum = field[3].trim();
+        LocalDate expiryDate = LocalDate.parse(field[4].trim());
+        LocalDateTime lastUpdated = LocalDateTime.parse(field[5].trim());
+
+        // 2. Object Creation
+        // Return a brand new instance using the parsed data
+        return new Medicine(name, description, quantity, regNum, expiryDate, lastUpdated);
+    }
+    
+    public void deductStock(int amount) {
+        if (amount > 0) {
+            this.quantity -= amount;
+            
+            //update the last updated date
+            this.lastUpdated = java.time.LocalDateTime.now();
+
+        }
+    }
+
+    
+
 }

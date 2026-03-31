@@ -4,6 +4,7 @@
  */
 package ListADT;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
@@ -81,9 +82,23 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
 
     @Override
     public T search(T element) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+        // Start from the first actual data node
+        Node<T> current = dummy.getNextNode();
 
+        // Traverse until we loop back to the dummy placeholder
+        while (current != dummy) {
+            // If the data matches, return the ACTUAL object from the list
+            if (current.getData().equals(element)) {
+                return current.getData();
+            }
+            // Move to the next node
+            current = current.getNextNode();
+        }
+
+        // If we looped through everything and found nothing
+        return null;
+    }
+    
     @Override
     public int size() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
@@ -119,7 +134,12 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
     @Override
     public void sort() {
         // referenced from: https://www.youtube.com/shorts/USyuCNeCxKU
- 
+        // Step 0: do nothing if list empty
+        if (dummy.getNextNode() == dummy || dummy.getNextNode().getNextNode() == dummy)  {
+            return;
+        }
+        
+        
         // Step 1: break the circular chain
         breakCircular();
 
@@ -129,6 +149,28 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
         // Step 2: find the middle of linked list
         // Step 3: sort and merge the linked list
         head = mergeSort(head);
+        
+        // Step 4: reconnect circular chain
+        mergeCircular(head);
+    }
+
+    public void sort(Comparator<T> column) {
+        // referenced from: https://www.youtube.com/shorts/USyuCNeCxKU
+        // Step 0: do nothing if list empty
+        if (dummy.getNextNode() == dummy || dummy.getNextNode().getNextNode() == dummy)  {
+            return;
+        }
+        
+        
+        // Step 1: break the circular chain
+        breakCircular();
+
+        // get head node so the dummy node wont be included for the merge sort
+        Node<T> head = dummy.getNextNode();
+        
+        // Step 2: find the middle of linked list
+        // Step 3: sort and merge the linked list
+        head = mergeSort(head, column);
         
         // Step 4: reconnect circular chain
         mergeCircular(head);
@@ -151,6 +193,26 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
         
         // after sorting, merge it
         return merge(left, right);
+    }
+    
+    private Node<T> mergeSort(Node<T> element, Comparator<T> comparator) {
+        // if linked list is empty
+        if (element == null || element.getNextNode() == null)
+            return element;
+        
+        // find the middle of linked list
+        Node<T> middle = getMiddle(element);
+        Node<T> nextOfMiddle = middle.getNextNode();
+        
+        // split linked list to 2 part
+        middle.setNextNode(null);
+        
+        // sort each part
+        Node<T> left = mergeSort(element, comparator);
+        Node<T> right = mergeSort(nextOfMiddle, comparator);
+        
+        // after sorting, merge it
+        return merge(left, right, comparator);
     }
     
     private Node<T> getMiddle(Node<T> element) {
@@ -195,6 +257,33 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
         } else {
             result = b;
             result.setNextNode(merge(a, b.getNextNode()));
+        }
+
+        return result;
+    }
+    
+    private Node<T> merge(Node<T> a, Node<T> b, Comparator<T> comparator) {
+        // sort and merge
+            
+        //both is for when after split, only got 1 linked list
+        if (a == null) { 
+            return b;
+        }
+        
+        if (b == null) { 
+            return a;
+        }
+
+        Node<T> result;
+        
+        // referenced from https://www.w3schools.com/java/java_advanced_sorting.asp
+        // compare and sort then merge
+        if (comparator.compare(a.getData(), b.getData()) <= 0) {
+            result = a;
+            result.setNextNode(merge(a.getNextNode(), b, comparator));
+        } else {
+            result = b;
+            result.setNextNode(merge(a, b.getNextNode(), comparator));
         }
 
         return result;
