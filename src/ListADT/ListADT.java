@@ -18,11 +18,11 @@ import java.util.function.Consumer;
  */
 
 
-
 public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
     
     // We develop "circular" linked list with "dummy" node
     // What is dummy node? check here https://www.youtube.com/watch?v=aloIxnZ4EvY
+    private int numberOfNodes; 
     
     private Node<T> dummy; // We declare a dummy node first.
     
@@ -32,6 +32,7 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
     public ListADT() {
         dummy = new Node<>(null); //defines dummy node with no data.
         dummy.setNextNode(dummy); //point itself, circles back.
+        numberOfNodes = 0; //new list always empty
     }
     
     @Override
@@ -52,16 +53,21 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
         
         // insert new node if next node is dummy, 
         // dummy <- firstnode <- secondnode
-        last.setNextNode(newNode);  
+        last.setNextNode(newNode); 
+        
         
         // bind new node to dummy for circulation
         // dummy <- firstnode <- secondnode <- dummy
         newNode.setNextNode(dummy); 
-        
+        numberOfNodes++;
     }
 
     @Override
     public boolean remove(T element) {
+        if(element == null || isEmpty()){
+            return false;
+        }
+        
          Node<T> previous = dummy;
          Node<T> current = dummy.getNextNode();
          
@@ -71,6 +77,7 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
              if(current.getData().equals(element)){
                  //Reroute the previous node's pointer to skip the current node
                  previous.setNextNode(current.getNextNode());
+                 numberOfNodes--;
                  return true;
              }
              //Move pointers forward
@@ -82,6 +89,8 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
 
     @Override
     public T search(T element) {
+        // To use search, have to create a object with the element 
+        // eg. target = new Doctor("A002");  Doctor.search(target);
         // Start from the first actual data node
         Node<T> current = dummy.getNextNode();
 
@@ -99,20 +108,81 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
         return null;
     }
     
+    public T earlyExitSearch(T element) {
+        // USE ONLY ON SORTED
+        Node<T> current = dummy.getNextNode();
+
+        // Traverse until we loop back to the dummy placeholder
+        while (current != dummy) {
+            // If the data matches, return the ACTUAL object from the list
+            if (current.getData().equals(element)) {
+                return current.getData();
+            }
+            
+            // Early Exit condition
+            if ((current.getData()).compareTo(element) > 0) {
+                return null; 
+            }
+            
+            // Move to the next node
+            current = current.getNextNode();
+        }
+
+        // If we looped through everything and found nothing
+        return null;
+    }
+    
+    public T binarySearch(T element) {
+        // USE ONLY ON SORTED
+        //Check if list empty -> dummy start, dummy last, both null
+        //if list not empty 
+        if (!this.isEmpty()) { 
+            //initalize boundaries based on dummy
+            Node<T> start = dummy.getNextNode();
+            Node<T> end = dummy;
+            
+            // pass to start recursion
+            return binarySearch(start, end, element);
+        }
+        return null;
+    }
+    
+    public T binarySearch(Node<T> start, Node<T> end, T element) {
+        //Check if list empty -> dummy start, dummy last, both null 
+        if (start == null || start == end) {
+            return null;
+        }
+        
+        //set first node as middle of list
+        Node<T> middle = getMiddle(start, end);
+            
+        //compare == , < , > 
+        if (middle.getData().compareTo(element) == 0) { // element same then return itself
+            return middle.getData();
+        } else if (middle.getData().compareTo(element) > 0) { // element less
+            return binarySearch(start, middle, element);
+        } else { //element greater
+            return binarySearch(middle.getNextNode(), end, element);
+        }
+    }
+    
     @Override
     public int size() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return numberOfNodes;
     }
 
     @Override
     public boolean isEmpty() {
         // the mode is empty if and only if the dummy <- dummy
-        return dummy.getNextNode() == dummy;
+        // For better integration and future maintenance this code checks for numberOfNodes
+        // dummy <- dummy is same as numberOfNodes == 0 
+        return (numberOfNodes == 0);
     }
 
     @Override
     public void clear() {
         dummy.setNextNode(dummy);
+        numberOfNodes = 0; //reset
     }
 
     @Override
@@ -235,7 +305,26 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
         // the slow one is usually at middle one
         return slow;
     }
+    
+    private Node<T> getMiddle(Node<T> start, Node<T> end) {
+    // Safety check
+    if (start == null || start == end) {
+        return start;
+    }
 
+    Node<T> slow = start;
+    Node<T> fast = start;
+
+    // The fast pointer stops if it reaches the 'end' boundary
+    while (fast != end && fast.getNextNode() != end) {
+        slow = slow.getNextNode();
+        fast = fast.getNextNode().getNextNode();
+    }   
+    
+    return slow;
+}
+    
+    
     private Node<T> merge(Node<T> a, Node<T> b) {
         // sort and merge
         
