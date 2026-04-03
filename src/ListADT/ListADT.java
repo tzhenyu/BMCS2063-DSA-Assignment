@@ -6,6 +6,7 @@ package ListADT;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Spliterator;
 import java.util.function.Consumer;
 
 
@@ -64,10 +65,6 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
 
     @Override
     public boolean remove(T element) {
-        if(element == null || isEmpty()){
-            return false;
-        }
-        
          Node<T> previous = dummy;
          Node<T> current = dummy.getNextNode();
          
@@ -419,6 +416,16 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
     public Iterator<T> iterator() {
         return new LLIterator();
     }
+
+    @Override
+    public void forEach(Consumer<? super T> action) {
+        ListADTInterface.super.forEach(action); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+    }
+
+    @Override
+    public Spliterator<T> spliterator() {
+        return ListADTInterface.super.spliterator(); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+    }
     
     private class LLIterator implements Iterator<T> {
         // referenced from https://drive.google.com/drive/u/1/folders/1OO0bQtvYea_y3t0NaHI_sDGSrnQnvQvC
@@ -453,6 +460,21 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
             Iterator.super.forEachRemaining(action); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
         }
         
+    }
+    
+    @Override
+    public T getEntry(int index) {
+        if (index < 0 || index >= numberOfNodes) {
+            throw new IndexOutOfBoundsException("Invalid index: " + index);
+        }
+
+        Node <T> current = dummy.getNextNode();
+
+        for (int i = 0; i < index; i++) {
+            current = current.getNextNode();
+        }
+
+        return current.getData();
     }
     
     
