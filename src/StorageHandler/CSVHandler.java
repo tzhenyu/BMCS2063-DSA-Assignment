@@ -52,4 +52,3 @@ public interface CSVHandler<T> {
     T fromCSV(String[] fields);
 }
 
-
