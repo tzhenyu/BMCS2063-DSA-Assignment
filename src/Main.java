@@ -7,52 +7,53 @@
  *
  * @author zhenyu
  */
-import ListADT.Node;
-import ListADT.ListADT;
 import Clinic.Boundary.MedicineBoundary;
-public class Main {
+import Clinic.Boundary.PatientBoundary;
+import java.util.Scanner;
 
+public class Main {
+    
     public static void main(String[] args) {
-//        Initialize Boundary
-        MedicineBoundary medicineBoundary = new MedicineBoundary();
+        Scanner scanner = new Scanner(System.in);
         
-        medicineBoundary.start();
-//        //Playing with Nodes
-//        Node<String> n1 = new Node<>("apple");
-//        Node<String> n2 = new Node<>("banana");        
-//        Node<String> n3 = new Node<>("cidar");        
-//        
-//        // Circular linked list
-//        n1.setNextNode(n2);
-//        n2.setNextNode(n3);
-//        n3.setNextNode(n1);
-//        
-////        //Print out data, will cause infinite loop
-////        Node<String> current = n1;
-////        
-////        while (current != null) { 
-////            System.out.println(current.getData());
-////            current = current.getNextNode();
-////        }
-//        
-//        // Prints out data, but will stop when loop back to start
-//        Node<String> start = n1;
-//        Node<String> current = start;
-//        
-//        do {
-//            System.out.println(current.getData());
-//            current = current.getNextNode();
-//        } while (current != start);
-//        
-//        
-//        //Playing with insert()
-//        //Define object
-//        ListADT<String> patient = new ListADT<>();
-//        
-//        patient.insert("your mama");
-//        patient.insert("your baba");
-//        
-//        patient.display(); //someone implement this!
+        MedicineBoundary medicineBoundary = new MedicineBoundary();
+        PatientBoundary patientBoundary = new PatientBoundary();
+        
+        clearConsole();
+        displayHeader();
+        
+        while(true) {
+            System.out.println("[1] Medicine Management");
+            System.out.println("[2] Patient Management");
+            System.out.println("[3] Appointments/Availability");
+            System.out.println("[4] Exit");
+            System.out.print("Enter choice: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // reading choice
+                
+            switch (choice) {
+                case 1 -> medicineBoundary.start();
+                case 2 -> patientBoundary.menu();
+                case 3 -> {System.out.println("gurt");}
+                case 4 -> {return;}
+                default -> System.out.println("Invalid option.");
+            }
+
+        }
+    }
+    
+    public static void displayHeader() {
+        System.out.println("====================================================");
+        System.out.println("         Welcome to TAR UMT Clinic Management");
+        System.out.println("====================================================");
+        System.out.println();
+    }
+    
+    public static void clearConsole() {
+        for (int i = 0; i < 50; i++) { // Print 50 blank lines
+            System.out.println();
+        }
     }
 }
 

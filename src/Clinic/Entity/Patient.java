@@ -4,78 +4,183 @@
  */
 package Clinic.Entity;
 
+import StorageHandler.CSVHandler;
 /**
  *
- * @author ASUS
+ * @author chien
  */
-public class Patient implements Comparable<Patient>{
-    
-    private String patientID;
+
+
+public class Patient implements Comparable<Patient> , CSVHandler<Patient> {
+
+    private String patientId;
     private String name;
-    private String ic;
-    private String phone;
-    private String age;
-    private String gmail;
+    private int age;
+    private String gender;
+    private String contactNumber;
+    private String nationality;
+    private String idType;     //use for diff IC or passport
+    private String idNumber;
+    private String patientType;
+    private String allergyInfo;
+    private String medicalHistory;
 
-    public Patient(String patientID, String name, String ic, String phone, String age, String gmail) {
-        this.patientID = patientID;
+    public Patient(){
+    }
+    
+    public Patient(String patientId, String name, int age, String gender, String contactNumber, String nationality,
+            String idType, String idNumber, String patientType, String allergyInfo, String medicalHistory){
+        this.patientId = patientId;
         this.name = name;
-        this.ic = ic;
-        this.phone = phone;
         this.age = age;
-        this.gmail = gmail;
+        this.gender = gender;
+        this.contactNumber = contactNumber;
+        this.nationality = nationality;
+        this.idType = idType;
+        this.idNumber = idNumber;
+        this.patientType = patientType;
+        this.allergyInfo = allergyInfo;
+        this.medicalHistory = medicalHistory;  
     }
 
-    public String getPatientID() { 
-        return patientID; 
-    }
-    public String getName() { 
-        return name; 
+    public String getPatientId() {
+        return patientId;
     }
 
-    public String getPhone() {
-        return phone;
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public String getName() {
+        return name;
     }
 
-    public String getAge() {
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
         return age;
     }
 
-    public void setAge(String age) {
+    public void setAge(int age) {
         this.age = age;
     }
 
-    public String getGmail() {
-        return gmail;
+    public String getGender() {
+        return gender;
     }
 
-    public void setGmail(String gmail) {
-        this.gmail = gmail;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
-    public String getIc() {
-        return ic;
+    public String getContactNumber() {
+        return contactNumber;
     }
 
-    public void setIc(String ic) {
-        this.ic = ic;
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
     }
 
-    
+    public String getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
+    }
+
+    public String getIdType() {
+        return idType;
+    }
+
+    public void setIdType(String idType) {
+        this.idType = idType;
+    }
+
+    public String getIdNumber() {
+        return idNumber;
+    }
+
+    public void setIdNumber(String idNumber) {
+        this.idNumber = idNumber;
+    }
+
+    public String getPatientType() {
+        return patientType;
+    }
+
+    public void setPatientType(String patientType) {
+        this.patientType = patientType;
+    }
+
+    public String getAllergyInfo() {
+        return allergyInfo;
+    }
+
+    public void setAllergyInfo(String allergyInfo) {
+        this.allergyInfo = allergyInfo;
+    }
+
+    public String getMedicalHistory() {
+        return medicalHistory;
+    }
+
+    public void setMedicalHistory(String medicalHistory) {
+        this.medicalHistory = medicalHistory;
+    }
+
     @Override
+    public int compareTo(Patient other) {
+        return this.patientId.compareToIgnoreCase(other.patientId);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if(obj == null || getClass() != obj.getClass()) return false;
+        
+        Patient other = (Patient) obj;
+        return this.patientId != null && this.patientId.equalsIgnoreCase(other.patientId);
+    }
+
+   @Override
     public String toString() {
-        return "Patient{" + "patientID=" + patientID + ", name=" + name + "ic "+ ic + ", phone=" + phone + ", age=" + age + ", gmail=" + gmail + '}';
+        return String.format("| %-8s | %-20s | %-3d | %-8s | %-13s | %-12s | %-10s | %-15s | %-12s | %-15s | %-20s |%n",
+                patientId, name, age, gender, contactNumber, nationality,
+                idType, idNumber, patientType, allergyInfo, medicalHistory);
     }
-
+    
+    @Override  // use to store the object internally? just for completeness not need for our ADT
+    public int hashCode() {
+       return patientId == null ? 0 : patientId.toLowerCase().hashCode();
+    } //same patientId -> same hashCode, consistent with equals()
+   
     @Override
-    public int compareTo(Patient o) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-    
-    
+    public String toCSV() {
+    return patientId + ";" + name + ";" + age + ";" + gender + ";" +
+           contactNumber + ";" + nationality + ";" + idType + ";" +
+           idNumber + ";" + patientType + ";" + allergyInfo + ";" + medicalHistory;
 }
 
+    @Override
+    public Patient fromCSV(String[] fields) {
+    String patientId = fields[0].trim();
+    String name = fields[1].trim();
+    int age = Integer.parseInt(fields[2].trim());
+    String gender = fields[3].trim();
+    String contactNumber = fields[4].trim();
+    String nationality = fields[5].trim();
+    String idType = fields[6].trim();
+    String idNumber = fields[7].trim();
+    String patientType = fields[8].trim();
+    String allergyInfo = fields[9].trim();
+    String medicalHistory = fields[10].trim();
+
+    return new Patient(patientId, name, age, gender, contactNumber,
+            nationality, idType, idNumber, patientType, allergyInfo, medicalHistory);
+}
+           
+    
+}

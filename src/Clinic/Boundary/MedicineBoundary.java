@@ -18,11 +18,10 @@ import java.util.Scanner;
 public class MedicineBoundary {
      
     String regex = "^MAL\\d{8}[AXTNH][CERSYZ]?$";
-    private static final String ROW_FORMAT = "| %-25s | %-35s | %-8s | %-13s | %-11s | %-16s |%n";
+    private static final String ROW_FORMAT = "| %-25s | %-35s | %-8s | %-13s | %-11s | %-12s |%n";
         
     private MedicineController controller;
     private Scanner scanner;
-    private int pageIndex = 0; //pagination feature
     
     public MedicineBoundary() {
         controller = new MedicineController();
@@ -45,7 +44,10 @@ public class MedicineBoundary {
     public void menu() {
         clearConsole();
         while (true) {
-            System.out.println("\n--- Medicine Management ---");
+            System.out.println("====================================================");
+            System.out.println("                 Medical Management");
+            System.out.println("====================================================");
+            System.out.println();
             System.out.println("1. Add Medicine");
             System.out.println("2. Delete Medicine");
             System.out.println("3. View Medicines");
@@ -59,13 +61,12 @@ public class MedicineBoundary {
                 case 1 -> addMedicine();
                 case 2 -> deleteMedicine();
                 case 3 -> viewMedicine();
-                case 4 -> exit();
+                case 4 -> {saveFile(); return;}
                 default -> System.out.println("Invalid option");
             }
         }
     }
-    
-    
+
 
     private void addMedicine() {
         clearConsole();
@@ -116,128 +117,86 @@ public class MedicineBoundary {
             quantity = scanner.nextInt();
         }
         
-        controller.addMedicine(name, desc, quantity, registrationNum, expiryDate);
-        
+        controller.insertMedicine(new Medicine(
+            name, desc, quantity, registrationNum, expiryDate, LocalDateTime.now()
+        ));
+
         System.out.println("Medicine added.");
-        saveFile();
         clearConsole();
     }
 
 private void deleteMedicine() {
         clearConsole();
-        
-        System.out.println(controller.viewMedicine());
-        
         System.out.print("Enter the name of the medicine to delete: ");
         String searchName = scanner.nextLine();
 
         // Create a temporary Medicine object just to hold the name we want to delete
         // We can pass null for the other fields because our equals() method only checks the name!
-        
+        Medicine dummyMedicine = new Medicine(searchName, null, 0, null, null, null);
 
         // Ask the controller to delete it, and check the true/false result
-        boolean isDeleted = controller.deleteMedicineByName(searchName);
+        boolean isDeleted = controller.deleteMedicine(dummyMedicine);
 
         if (isDeleted) {
             System.out.println("Success! " + searchName + " has been removed.");
-            saveFile();
         } else {
             System.out.println("Error: " + searchName + " was not found in the system.");
         }
     }
 
-
+    private void viewMedicine() {
+        clearConsole();
+        //Print the UI
+        System.out.printf(ROW_FORMAT, "NAME", "DESCRIPTION", "QUANTITY", "REG. NUM", "EXPIRY DATE", "LAST UPDATED");
+                    
+        //Fetch the clipboard of text and immediately print it out
+        System.out.println(controller.viewMedicine());
+        controller.checkStock();
+        sortMedicine();
+        
+    }
+    
     private void searchMedicine() {
         clearConsole();
         System.out.print("Search: ");
         // trim is used to remove the whitespace before and after
         String query = scanner.nextLine().trim();  
         controller.searchAndDisplay(query);
-        viewMedicine();
     }
 
-    
-    private void viewMedicinePage(int page) {
-        clearConsole();
-        System.out.printf(ROW_FORMAT, "NAME", "DESCRIPTION", "QUANTITY", "REG. NUM", "EXPIRY DATE", "LAST UPDATED"); // header
-        controller.calculatePaginationRangeAndDisplay(page);
-        controller.checkStock();
-    }
-    
-    private void viewMedicine() {
-        clearConsole();
-        System.out.printf(ROW_FORMAT, "NAME", "DESCRIPTION", "QUANTITY", "REG. NUM", "EXPIRY DATE", "LAST UPDATED"); // header
-        viewMedicinePage(0);
-        viewMedicineMenu();
-        
-    }
-    private void viewMedicineMenu() {
-        // Combines sort, search, pagination feature
-        
-
+    private void sortMedicine() {
         while(true) {
-            System.out.println("-- OPTIONS --------------------------------------------------------------------------------------------------------------------");
-            System.out.print("SORT BY ");
+            System.out.println("-- SORT OPTIONS ---------------------------------------------------------------------------------------------------------------");
             System.out.print(" [1] Name");
             System.out.print(" [2] Description");
             System.out.print(" [3] Quantity");
             System.out.print(" [4] Registration Number");
             System.out.print(" [5] Expiry Date");
             System.out.print(" [6] Last Updated");
-            System.out.print(" \n        ");
-            System.out.print(" [7] Search");
-            System.out.print(" [8] Previous Page");
-            System.out.print(" [9] Next Page");
-            System.out.print(" [0] Back to Main Menu");
+            System.out.print(" \n [7] Search");
+            System.out.print(" [8] Back to Main Menu");
 
             System.out.print("\nEnter choice: ");
 
             int choice = scanner.nextInt();
-            scanner.nextLine(); // reading choice
+                scanner.nextLine(); // reading choice
                 
             //referenced from https://www.geeksforgeeks.org/java/java-comparator-interface/
             switch (choice) {
-                case 1 -> sortMedicine(Comparator.comparing(Medicine::getName));
-                case 2 -> sortMedicine(Comparator.comparing(Medicine::getDescription));
-                case 3 -> sortMedicine(Comparator.comparing(Medicine::getQuantity));
-                case 4 -> sortMedicine(Comparator.comparing(Medicine::getRegistrationNumber));
-                case 5 -> sortMedicine(Comparator.comparing(Medicine::getExpiryDate));
-                case 6 -> sortMedicine(Comparator.comparing(Medicine::getLastUpdated));
-                
+                case 1 -> controller.sortMedicine(Comparator.comparing(Medicine::getName)); 
+                case 2 -> controller.sortMedicine(Comparator.comparing(Medicine::getDescription));
+                case 3 -> controller.sortMedicine(Comparator.comparing(Medicine::getQuantity));
+                case 4 -> controller.sortMedicine(Comparator.comparing(Medicine::getRegistrationNumber));
+                case 5 -> controller.sortMedicine(Comparator.comparing(Medicine::getExpiryDate));
+                case 6 -> controller.sortMedicine(Comparator.comparing(Medicine::getLastUpdated));
                 case 7 -> searchMedicine();
-                case 8 -> previousPage();
-                case 9 -> nextPage();
-                case 0 -> {pageIndex = 0; menu(); return;}
-
+                case 8 -> {menu(); return;}
                 default -> System.out.println("Invalid option.");
             }
 
-            
+            //list the medicine list after the sort
+            viewMedicine();
         }
-    }
-    
-    private void nextPage(){
-        pageIndex++; 
-        viewMedicinePage(pageIndex);
-    }
-
-    private void previousPage() {
-        if (pageIndex > 0) {
-            pageIndex--; 
-            viewMedicinePage(pageIndex);
-        } else {
-            System.out.println("Already on the first page.");
-            viewMedicinePage(pageIndex);  // redisplay current page
-        }
-    }
-
-    private void sortMedicine(Comparator<Medicine> comparator) {
-        controller.sortMedicine(comparator);
-        viewMedicine();
-    }
-    private void exit() {
-        System.out.println("Exiting...");
-        System.exit(0);
     }
     
     public static void clearConsole() {
