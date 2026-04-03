@@ -54,5 +54,7 @@ public interface ListADTInterface<T> extends Iterable<T>{
     String display();
     
     void sort();
+
+    public T getEntry(int i);
     
 }
