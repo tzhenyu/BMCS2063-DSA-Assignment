@@ -26,7 +26,11 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
     private int numberOfNodes; 
     
     private Node<T> dummy; // We declare a dummy node first.
+    private Node<T> tail; // Tail node for o(1) tail insertion
     
+    //global numberOfNodes for o(1) 
+    private int numberOfNodes; 
+
     // constructor where we define the linked list with dummy node first.
     // it looks like this:
     // dummy <- dummy
@@ -38,18 +42,19 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
     
     @Override
     public void insert(T element) {
+        // Previous implementation adds new node in the tail with no tail node
+        // which causes o(n) 
+        // Current implementation added tail pointer to insert in o(1)
+        Node<T> newNode = new Node<>(element);
         
-        Node<T> newNode = new Node<>(element); // defines new node
-        Node<T> last = dummy; //defines dummy as last node
-        
-        // say we have: dummmy <- firstnode <- dummy
-        
-        // finds the last, real node
-        // dummy <- firstnode <- dummy
-        //             ^^
-        //          this one
-        while (last.getNextNode() != dummy) {
-            last = last.getNextNode();
+        if (isEmpty()) {
+            dummy.setNextNode(newNode);
+            newNode.setNextNode(dummy);
+            tail = newNode;
+        } else {
+            newNode.setNextNode(dummy); // points new node to dummy
+            tail.setNextNode(newNode);
+            tail = newNode;
         }
         
         // insert new node if next node is dummy, 
@@ -108,7 +113,6 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
     public T earlyExitSearch(T element) {
         // USE ONLY ON SORTED
         Node<T> current = dummy.getNextNode();
-
         // Traverse until we loop back to the dummy placeholder
         while (current != dummy) {
             // If the data matches, return the ACTUAL object from the list
@@ -411,6 +415,25 @@ public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
         // point last node to dummy
         last.setNextNode(dummy);  
     }
+    
+    public T getEntry(int index) {
+        //TAN: FILLER FROM AI
+        // 1. Boundary check
+        if (index < 0 || index >= numberOfNodes) {
+            return null;
+        }
+
+        // 2. Start at the beginning (the head node)
+        Node<T> currentNode = dummy.getNextNode();
+
+        // 3. Traverse the chain to the specific index
+        for (int counter = 0; counter < index; counter++) {
+            currentNode = currentNode.getNextNode();
+        }
+
+        // 4. Return the data stored in that node
+        return currentNode.getData();
+    };
     
     @Override
     public Iterator<T> iterator() {
