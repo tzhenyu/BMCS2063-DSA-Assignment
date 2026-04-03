@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
@@ -27,6 +28,8 @@ public class MedicineController implements FileHandler {
     private static final String FILENAME = "src/medicine.csv";
     private static final String ROW_FORMAT = "| %-25s | %-35s | %-8s | %-13s | %-11s | %-16s |%n";
     
+    private static final int DISPLAY_AMOUNT = 8;
+    
     private ListADT<Medicine> medicineList;
     
     public MedicineController() {
@@ -39,6 +42,11 @@ public class MedicineController implements FileHandler {
     
     public boolean deleteMedicine(Medicine medicine) {
        return medicineList.remove(medicine);
+    }
+    
+    public boolean deleteMedicineByName(String name) {
+       Medicine dummyMedicine = new Medicine(name, null, 0, null, null, null);
+       return medicineList.remove(dummyMedicine);
     }
     
     public String viewMedicine() {
@@ -66,6 +74,20 @@ public class MedicineController implements FileHandler {
     
     public void sortMedicine(Comparator<Medicine> by) {
         medicineList.sort(by);
+    }
+    
+    public ListADT<Medicine> searchMedicineByQuery(String query) {
+    ListADT<Medicine> searchResults = new ListADT<>();
+
+    for (Medicine m : medicineList) {
+        if (m.getName().toLowerCase().contains(query.toLowerCase()) ||
+            m.getDescription().toLowerCase().contains(query.toLowerCase()) ||
+            m.getRegistrationNumber().toLowerCase().contains(query.toLowerCase())) {
+            searchResults.insert(m);
+        }
+    }
+
+    return searchResults;
     }
     
     @Override
@@ -116,8 +138,40 @@ public class MedicineController implements FileHandler {
         }
     }
     
-    public void PaginateList() {
-       //TODO: COMPLETE PAGINATE LIST FUNCTION
+    public void calculatePaginationRangeAndDisplay(int pageIndex) {
+        DateTimeFormatter lastUpdateDateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+        int totalItems = medicineList.size();
+        int startIndex =  pageIndex * DISPLAY_AMOUNT;
+        int endIndex = Math.min(startIndex + DISPLAY_AMOUNT, medicineList.size());       
+        
+        //Empty content
+        if (totalItems == 0) {
+            System.out.println("The medicine list is currently empty.");
+            return;
+        }
+        
+        //Page less than 1 page
+        if (startIndex < 0) {
+            System.out.println("This is already first page");
+            return;
+        }
+        
+        //End of page
+        if (startIndex >= medicineList.size()) {
+            System.out.println("No more entries found.");
+            return;
+        }
+        
+       
+       for (int i = startIndex; i < endIndex; i++) {
+           Medicine entry = medicineList.getEntry(i);
+           String formattedDate = entry.getLastUpdated().format(lastUpdateDateFormatter);
+           System.out.printf(ROW_FORMAT, entry.getName(), entry.getDescription(), entry.getQuantity(), entry.getRegistrationNumber(), entry.getExpiryDate(), formattedDate);
+       }
+       
+        System.out.println("\nDisplaying items " + (startIndex + 1) + " to " + endIndex);
+
     }
     
     // CAN BE USED ON APPOINTMENT CLASS
@@ -142,25 +196,20 @@ public class MedicineController implements FileHandler {
     
     public void searchAndDisplay(String query) {
         // enter to continue, referenced from https://stackoverflow.com/questions/26184409/java-console-prompt-for-enter-input-before-moving-on
+        DateTimeFormatter lastUpdateDateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+        boolean foundAtLeastOne = false;
         Scanner scanner = new Scanner(System.in);
         
-        DateTimeFormatter lastUpdateDateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         
         System.out.println("--- Search Results for: " + query + " ---");
         System.out.printf(ROW_FORMAT, "NAME", "DESCRIPTION", "QUANTITY", "REG. NUM", "EXPIRY DATE", "LAST UPDATED");
-
-        boolean foundAtLeastOne = false;
 
         // 1. Walk through your main list
         for (Medicine m : medicineList) {
             //Format the date
             String formattedDate = m.getLastUpdated().format(lastUpdateDateFormatter);
-            // 2. The "Fuzzy" check logic lives here
-            if (m.getName().toLowerCase().contains(query.toLowerCase())) {
-                // 3. Print the match immediately
-                System.out.printf(ROW_FORMAT, m.getName(), m.getDescription(), m.getQuantity(), m.getRegistrationNumber(), m.getExpiryDate(), formattedDate);
-                foundAtLeastOne = true;
-            }
+            System.out.printf(ROW_FORMAT, m.getName(), m.getDescription(), m.getQuantity(), m.getRegistrationNumber(), m.getExpiryDate(), formattedDate);
         }
 
         if (!foundAtLeastOne) {

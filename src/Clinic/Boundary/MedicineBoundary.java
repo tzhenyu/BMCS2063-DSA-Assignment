@@ -22,6 +22,7 @@ public class MedicineBoundary {
         
     private MedicineController controller;
     private Scanner scanner;
+    private int pageIndex = 0; //pagination feature
     
     public MedicineBoundary() {
         controller = new MedicineController();
@@ -144,16 +145,83 @@ private void deleteMedicine() {
         }
     }
 
+    private void viewMedicinePage(int page) {
+        clearConsole();
+        System.out.printf(ROW_FORMAT, "NAME", "DESCRIPTION", "QUANTITY", "REG. NUM", "EXPIRY DATE", "LAST UPDATED"); // header
+        controller.calculatePaginationRangeAndDisplay(page);
+        controller.checkStock();
+    }
+    
     private void viewMedicine() {
         clearConsole();
-        //Print the UI
-        System.out.printf(ROW_FORMAT, "NAME", "DESCRIPTION", "QUANTITY", "REG. NUM", "EXPIRY DATE", "LAST UPDATED");
-                    
-        //Fetch the clipboard of text and immediately print it out
-        System.out.println(controller.viewMedicine());
-        controller.checkStock();
-        sortMedicine();
+        System.out.printf(ROW_FORMAT, "NAME", "DESCRIPTION", "QUANTITY", "REG. NUM", "EXPIRY DATE", "LAST UPDATED"); // header
+        viewMedicinePage(0);
+        viewMedicineMenu();
         
+    }
+    private void viewMedicineMenu() {
+        // Combines sort, search, pagination feature
+        
+
+        while(true) {
+            System.out.println("-- OPTIONS --------------------------------------------------------------------------------------------------------------------");
+            System.out.print("SORT BY ");
+            System.out.print(" [1] Name");
+            System.out.print(" [2] Description");
+            System.out.print(" [3] Quantity");
+            System.out.print(" [4] Registration Number");
+            System.out.print(" [5] Expiry Date");
+            System.out.print(" [6] Last Updated");
+            System.out.print(" \n        ");
+            System.out.print(" [7] Search");
+            System.out.print(" [8] Previous Page");
+            System.out.print(" [9] Next Page");
+            System.out.print(" [0] Back to Main Menu");
+
+            System.out.print("\nEnter choice: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // reading choice
+                
+            //referenced from https://www.geeksforgeeks.org/java/java-comparator-interface/
+            switch (choice) {
+                case 1 -> sortMedicine(Comparator.comparing(Medicine::getName));
+                case 2 -> sortMedicine(Comparator.comparing(Medicine::getDescription));
+                case 3 -> sortMedicine(Comparator.comparing(Medicine::getQuantity));
+                case 4 -> sortMedicine(Comparator.comparing(Medicine::getRegistrationNumber));
+                case 5 -> sortMedicine(Comparator.comparing(Medicine::getExpiryDate));
+                case 6 -> sortMedicine(Comparator.comparing(Medicine::getLastUpdated));
+                
+                case 7 -> searchMedicine();
+                case 8 -> previousPage();
+                case 9 -> nextPage();
+                case 0 -> {pageIndex = 0; menu(); return;}
+
+                default -> System.out.println("Invalid option.");
+            }
+
+            
+        }
+    }
+    
+    private void nextPage(){
+        pageIndex++; 
+        viewMedicinePage(pageIndex);
+    }
+
+    private void previousPage() {
+        if (pageIndex > 0) {
+            pageIndex--; 
+            viewMedicinePage(pageIndex);
+        } else {
+            System.out.println("Already on the first page.");
+            viewMedicinePage(pageIndex);  // redisplay current page
+        }
+    }
+
+    private void sortMedicine(Comparator<Medicine> comparator) {
+        controller.sortMedicine(comparator);
+        viewMedicine();
     }
     
     private void searchMedicine() {
@@ -162,41 +230,7 @@ private void deleteMedicine() {
         // trim is used to remove the whitespace before and after
         String query = scanner.nextLine().trim();  
         controller.searchAndDisplay(query);
-    }
-
-    private void sortMedicine() {
-        while(true) {
-            System.out.println("-- SORT OPTIONS ---------------------------------------------------------------------------------------------------------------");
-            System.out.print(" [1] Name");
-            System.out.print(" [2] Description");
-            System.out.print(" [3] Quantity");
-            System.out.print(" [4] Registration Number");
-            System.out.print(" [5] Expiry Date");
-            System.out.print(" [6] Last Updated");
-            System.out.print(" \n [7] Search");
-            System.out.print(" [8] Back to Main Menu");
-
-            System.out.print("\nEnter choice: ");
-
-            int choice = scanner.nextInt();
-                scanner.nextLine(); // reading choice
-                
-            //referenced from https://www.geeksforgeeks.org/java/java-comparator-interface/
-            switch (choice) {
-                case 1 -> controller.sortMedicine(Comparator.comparing(Medicine::getName)); 
-                case 2 -> controller.sortMedicine(Comparator.comparing(Medicine::getDescription));
-                case 3 -> controller.sortMedicine(Comparator.comparing(Medicine::getQuantity));
-                case 4 -> controller.sortMedicine(Comparator.comparing(Medicine::getRegistrationNumber));
-                case 5 -> controller.sortMedicine(Comparator.comparing(Medicine::getExpiryDate));
-                case 6 -> controller.sortMedicine(Comparator.comparing(Medicine::getLastUpdated));
-                case 7 -> searchMedicine();
-                case 8 -> {menu(); return;}
-                default -> System.out.println("Invalid option.");
-            }
-
-            //list the medicine list after the sort
-            viewMedicine();
-        }
+        viewMedicine();
     }
     
     public static void clearConsole() {
