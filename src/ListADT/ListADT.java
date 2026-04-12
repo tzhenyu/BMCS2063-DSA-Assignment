@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  */
 
 
-public class ListADT<T extends Comparable<T>> implements List<T>{
+public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
     
     // We develop "circular" linked list with "dummy" node
     // What is dummy node? check here https://www.youtube.com/watch?v=aloIxnZ4EvY
@@ -87,20 +87,6 @@ public class ListADT<T extends Comparable<T>> implements List<T>{
          return false;
     }
 
-    public T getEntry(int index) {
-        if (index < 0 || index >= numberOfNodes) {
-            throw new IndexOutOfBoundsException("Invalid index: " + index);
-        }
-
-        Node <T> current = dummy.getNextNode();
-
-        for (int i = 0; i < index; i++) {
-            current = current.getNextNode();
-        }
-
-        return current.getData();
-    }
-    
     @Override
     public T search(T element) {
         // To use search, have to create a object with the element 
@@ -193,7 +179,6 @@ public class ListADT<T extends Comparable<T>> implements List<T>{
         return (numberOfNodes == 0);
     }
 
-    
     @Override
     public void clear() {
         dummy.setNextNode(dummy);
