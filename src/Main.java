@@ -11,6 +11,11 @@ import ListADT.Node;
 import ListADT.ListADT;
 import Clinic.Boundary.MedicineBoundary;
 import Clinic.Boundary.PatientBoundary;
+import Clinic.Boundary.AppointmentBoundary;
+import Clinic.Control.AppointmentController;
+import Clinic.Control.PatientController;
+import Clinic.Control.StaffController;
+import Clinic.Boundary.StaffBoundary;
 
 public class Main {
 
@@ -19,8 +24,23 @@ public class Main {
         //MedicineBoundary medicineBoundary = new MedicineBoundary();
         
         //medicineBoundary.start();
-        PatientBoundary patientBoundary = new PatientBoundary();
-        patientBoundary.start();
+ 
+        //Staff here
+        StaffBoundary staffBoundary = new StaffBoundary();
+        staffBoundary.start();
+
+        PatientController patientController = new PatientController();
+        patientController.loadFile();   // load patient records first
+
+        AppointmentController appointmentController =
+                new AppointmentController(patientController);
+
+        PatientBoundary patientBoundary = new PatientBoundary(patientController);
+        AppointmentBoundary appointmentBoundary =
+                new AppointmentBoundary(appointmentController);
+
+        patientBoundary.start();        // run patient module first
+        appointmentBoundary.start();    // then run appointment module
         
 //       //Playing with Nodes
 //        Node<String> n1 = new Node<>("apple");

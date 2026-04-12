@@ -28,15 +28,30 @@ public class PatientController implements FileHandler{
     }
     
     public void addPatient(Patient patient){
+        if(patient !=null){
         patientList.insert(patient);
     }
-    
-    public boolean deletePatient(Patient patient){
-        return patientList.remove(patient); 
     }
     
-    public Patient searchPatient(Patient patient){
-        return patientList.search(patient);
+    public boolean deletePatientById(String patientId) {
+    if (patientId == null || patientId.trim().isEmpty()) {
+        return false;
+    }
+
+    Patient dummyPatient = new Patient();
+    dummyPatient.setPatientId(patientId.trim());
+
+    return patientList.remove(dummyPatient);
+     }
+    
+    public Patient searchPatientById(String patientId) {
+        if (patientId == null || patientId.trim().isEmpty()) {
+            return null;
+        }
+
+        Patient dummyPatient = new Patient();
+        dummyPatient.setPatientId(patientId.trim());
+        return patientList.search(dummyPatient);
     }
     
     public String displayPatients(){
@@ -56,47 +71,58 @@ public class PatientController implements FileHandler{
     }
 
     public boolean updatePatient(String patientId, Patient updatedPatient) {
-        for (Patient patient : patientList) {
-            if (patient.getPatientId().equalsIgnoreCase(patientId)) {
-                patient.setName(updatedPatient.getName());
-                patient.setAge(updatedPatient.getAge());
-                patient.setGender(updatedPatient.getGender());
-                patient.setContactNumber(updatedPatient.getContactNumber());
-                patient.setNationality(updatedPatient.getNationality());
-                patient.setIdType(updatedPatient.getIdType());
-                patient.setIdNumber(updatedPatient.getIdNumber());
-                patient.setPatientType(updatedPatient.getPatientType());
-                patient.setAllergyInfo(updatedPatient.getAllergyInfo());
-                patient.setMedicalHistory(updatedPatient.getMedicalHistory());
-                return true;
-            }
+        if (patientId == null || updatedPatient == null) {
+            return false;
         }
-        return false;
+
+        Patient existingPatient = searchPatientById(patientId);
+        if (existingPatient == null) {
+            return false;
+        }
+
+        existingPatient.setName(updatedPatient.getName());
+        existingPatient.setAge(updatedPatient.getAge());
+        existingPatient.setGender(updatedPatient.getGender());
+        existingPatient.setContactNumber(updatedPatient.getContactNumber());
+        existingPatient.setNationality(updatedPatient.getNationality());
+        existingPatient.setIdType(updatedPatient.getIdType());
+        existingPatient.setIdNumber(updatedPatient.getIdNumber());
+        existingPatient.setPatientType(updatedPatient.getPatientType());
+        existingPatient.setAllergyInfo(updatedPatient.getAllergyInfo());
+        existingPatient.setMedicalHistory(updatedPatient.getMedicalHistory());
+
+        return true;
+    }
+
+    // MALAYSIA = insurance, non malaysian = oversea insurance
+    public boolean isEligibleForLocalInsurance(Patient patient) {
+        return patient != null &&
+               patient.getNationality() != null &&
+               patient.getNationality().equalsIgnoreCase("Malaysian");
     }
     
-    public boolean isInsuranceEligible(Patient patient){
-        return patient.getNationality().equalsIgnoreCase("Malaysian");
-    }
-    
-    //CHECK for REPETITION
-    public boolean patientExists(String patientId) {
+    //CHECK for REPETITION for AppointmentBoundary
+    public boolean isPatientExists(String patientId) {
     Patient dummy = new Patient();
     dummy.setPatientId(patientId);
     return patientList.search(dummy) != null;
-}
-    
-    public String generateNextPatientId() {
-    int max = 0;
-
-    for (Patient p : patientList) {
-        String id = p.getPatientId().substring(1); // remove 'P'
-        int num = Integer.parseInt(id);
-        if (num > max) {
-            max = num;
-        }
     }
+    
+   public String generateNextPatientId() {
+        int max = 0;
 
-    return String.format("P%04d", max + 1);
+        for (Patient patient : patientList) {
+            String patientId = patient.getPatientId();
+
+            if (patientId != null && patientId.matches("P\\d{4}")) {
+                int number = Integer.parseInt(patientId.substring(1));
+                if (number > max) {
+                    max = number;
+                }
+            }
+        }
+
+        return String.format("P%04d", max + 1);
     }
     
     public boolean nameExists(String name) {
@@ -108,14 +134,19 @@ public class PatientController implements FileHandler{
     return false;
     }
     
+    //To check whether a patient with the same IC / passport number already exists in the system
     public boolean idNumberExists(String idNumber) {
-    for (Patient patient : patientList) {
-        if (patient.getIdNumber() != null &&
-            patient.getIdNumber().equalsIgnoreCase(idNumber)) {
-            return true;
+        if (idNumber == null) {
+            return false;
         }
-    }
-    return false;
+
+        for (Patient patient : patientList) {
+            if (patient.getIdNumber() != null &&
+                patient.getIdNumber().equalsIgnoreCase(idNumber)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     public boolean contactNumberExists(String contactNumber) {
@@ -130,25 +161,34 @@ public class PatientController implements FileHandler{
     
     //For update Patient's details
     public boolean idNumberExistsExcept(String idNumber, String patientId) {
-    for (Patient patient : patientList) {
-        if (!patient.getPatientId().equalsIgnoreCase(patientId) &&
-            patient.getIdNumber() != null &&
-            patient.getIdNumber().equalsIgnoreCase(idNumber)) {
-            return true;
+        if (idNumber == null || patientId == null) {
+            return false;
         }
-    }
-    return false;
+
+        for (Patient patient : patientList) {
+            if (!patient.getPatientId().equalsIgnoreCase(patientId) &&
+                patient.getIdNumber() != null &&
+                patient.getIdNumber().equalsIgnoreCase(idNumber)) {
+                return true;
+            }
+        }
+        return false;
     }
     
+    //for update patient's details
     public boolean contactNumberExistsExcept(String contactNumber, String patientId) {
-    for (Patient patient : patientList) {
-        if (!patient.getPatientId().equalsIgnoreCase(patientId) &&
-            patient.getContactNumber() != null &&
-            patient.getContactNumber().equals(contactNumber)) {
-            return true;
+        if (contactNumber == null || patientId == null) {
+            return false;
         }
-    }
-    return false;
+
+        for (Patient patient : patientList) {
+            if (!patient.getPatientId().equalsIgnoreCase(patientId) &&
+                patient.getContactNumber() != null &&
+                patient.getContactNumber().equals(contactNumber)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     //Export Medical Report
@@ -173,6 +213,7 @@ public class PatientController implements FileHandler{
         writer.println("Patient Type    : " + patient.getPatientType());
         writer.println("Allergy Info    : " + patient.getAllergyInfo());
         writer.println("Medical History : " + patient.getMedicalHistory());
+
         writer.println("===================================");
 
         System.out.println("Medical report saved successfully to: " + filename);
@@ -183,6 +224,7 @@ public class PatientController implements FileHandler{
     
     @Override
     public void loadFile() {
+    patientList.clear();
     System.out.println("Loading from file: " + FILENAME);
     File csvFile = new File(FILENAME);
 
@@ -225,7 +267,7 @@ public class PatientController implements FileHandler{
         System.out.println("File saved.");
     } catch (IOException e) {
         System.out.println(e);
+         }
     }
-}
 
 }
