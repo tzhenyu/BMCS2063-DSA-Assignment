@@ -1,0 +1,13 @@
+========== MEDICAL REPORT ==========
+Patient ID      : P0001
+Name            : Jason Ngu
+Age             : 100
+Gender          : Male
+Contact Number  : 0124563987
+Nationality     : Malaysian
+ID Type         : IC
+ID Number       : 200510-13-6459
+Patient Type    : Emergency
+Allergy Info    : none
+Medical History : none
+===================================

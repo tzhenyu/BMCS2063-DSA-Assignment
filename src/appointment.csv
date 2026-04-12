@@ -1,0 +1,11 @@
+APPOINTMENT ID;PATIENT ID;DATE;TIME;PURPOSE;REMARKS
+A003;P003;15-10-2024;11-12;Flu Symptoms;High fever
+A008;P008;15-10-2024;15-16;Eye Checkup;Blurred vision
+A002;P002;15-10-2024;10-11;Dental Cleaning;First visit
+A001;P001;15-10-2024;10-11;General Checkup;N/A
+A004;P004;15-10-2024;11-12;Consultation;Follow-up
+A007;P007;15-10-2024;14-15;Blood Test;Routine check
+A005;P005;15-10-2024;12-13;Vaccination;COVID booster
+A006;P006;15-10-2024;13-14;Skin Rash;Allergy suspected
+A006;P001;16-10-2025;12-13;bierg;weger
+A0001;P0005;16-10-2025;14-15;Consultation;Eye Check up

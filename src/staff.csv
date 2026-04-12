@@ -1,0 +1,20 @@
+STAFF ID;FULL NAME;PHONE NO;EMAIL;IC NO;EMPLOYMENT TYPE;EMPLOYMENT STATUS;HIRE DATE;MEDICAL REGISTRATION NO;SPECIALIZATION;SCHEDULE AVAILABILITY;AVAILABILITY STATUS;LICENSE NUMBER;LICENSE EXPIRY DATE
+S-011;Nurul Huda;012-2233445;nurul.h@clinic.com;950101-14-1234;Full-Time;Active;2022-03-01
+S-012;Kevin Chong;017-8899001;kevin.c@clinic.com;960515-10-2345;Part-Time;Active;2023-07-15
+S-013;Suresh Naidu;016-3344552;suresh.n@clinic.com;930822-08-3456;Full-Time;Active;2021-11-10
+S-014;Fatima Zahra;019-1122334;fatima.z@clinic.com;981210-01-4567;Contract;Active;2024-01-05
+S-015;Amanda Wong;011-99887766;amanda.w@clinic.com;940404-14-5678;Full-Time;On-Leave;2020-06-20
+S-016;Zarif Aiman;014-5566778;zarif.a@clinic.com;970909-02-6789;Part-Time;Active;2023-09-01
+S-017;Lydia Gomez;013-4455667;lydia.g@clinic.com;990228-05-7890;Full-Time;Active;2025-02-15
+S-018;Daniel Lim;018-2233445;daniel.l@clinic.com;911111-07-8901;Full-Time;Active;2019-08-10
+S-019;Aisyah Ridhwan;012-7788990;aisyah.r@clinic.com;960314-10-9012;Contract;Active;2024-05-20
+S-020;Muthu Kumar;017-1122334;muthu.k@clinic.com;950707-08-0123;Part-Time;Active;2023-12-01
+D-001;Dr. Ahmad Fazil;012-9876543;ahmad.f@clinic.com;850412-14-5533;Full-Time;Active;2020-05-15;MMC-10293;General Practice;Mon-Fri 9AM-5PM;true;APC-2026-001;2026-12-31
+D-002;Dr. Sarah Lee;017-3344556;sarah.lee@clinic.com;880722-10-6644;Full-Time;Active;2021-08-01;MMC-11455;Pediatrics;Mon-Wed 8AM-4PM;true;APC-2026-002;2026-12-31
+D-004;Dr. Emily Chen;016-5566778;emily.c@clinic.com;900530-07-8866;Contract;Active;2023-01-15;MMC-12566;Dermatology;Tue-Fri 9AM-5PM;true;APC-2026-004;2026-12-31
+D-005;Dr. Siti Nurhaliza;011-12223344;siti.n@clinic.com;871109-01-9977;Full-Time;On-Leave;2018-11-20;MMC-08776;General Practice;Mon-Fri 9AM-5PM;false;APC-2026-005;2026-12-31
+D-006;Dr. William Tan;012-4455667;william.t@clinic.com;810818-14-1122;Part-Time;Active;2022-04-05;MMC-10022;Orthopedics;Mon-Wed 2PM-8PM;true;APC-2026-006;2026-12-31
+D-007;Dr. Priya Sharma;014-9988776;priya.s@clinic.com;920314-05-2233;Full-Time;Active;2024-02-01;MMC-13445;Ophthalmology;Mon-Fri 10AM-6PM;true;APC-2026-007;2026-12-31
+D-008;Dr. Johan Ariff;018-7766554;johan.a@clinic.com;841225-10-3344;Contract;Active;2023-06-10;MMC-10554;ENT;Wed-Sun 8AM-4PM;true;APC-2026-008;2026-12-31
+D-009;Dr. Michelle Yeoh;013-6655443;michelle.y@clinic.com;860909-07-4455;Full-Time;Active;2020-09-01;MMC-11223;Obstetrics;Tue-Sat 9AM-5PM;true;APC-2026-009;2026-12-31
+D-010;Dr. Hassan Mahmud;011-55443322;hassan.m@clinic.com;890404-02-5566;Part-Time;Active;2025-01-20;MMC-12334;Psychiatry;Fri-Sun 10AM-4PM;true;APC-2026-010;2026-12-31
