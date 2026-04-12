@@ -12,13 +12,15 @@ import java.util.Scanner;
  *
  * @author chien
  */
-public class PatientBoundary {
-    private PatientController controller;
-    private Scanner scanner;
+    public class PatientBoundary {
+    private final PatientController controller;   //final = the variable can only assigned once and cannot be changed
+    private final Scanner scanner;
+    private static final String RED = "\u001B[31m";
+    private static final String RESET = "\u001B[0m";
     
-    public PatientBoundary(){
-        controller = new PatientController();
-        scanner = new Scanner(System.in);
+    public PatientBoundary(PatientController controller) {
+    this.controller = controller;
+    this.scanner = new Scanner(System.in);
     }
     
     public void loadFile(){
@@ -35,10 +37,12 @@ public class PatientBoundary {
     }
     
     public void menu(){
-        int choice;
+        int choice = -1;   //ct as a safe starting value
         
         do{
-            System.out.println("\n=== Patient Management ===");
+            System.out.println("============================");
+            System.out.println("    Patient Management");
+            System.out.println("============================");
             System.out.println("1. Add Patient");
             System.out.println("2. Search Patient");
             System.out.println("3. Update Patient");
@@ -48,7 +52,12 @@ public class PatientBoundary {
             System.out.println("7. Export Medical Report");
             System.out.println("0. Exit");
             System.out.print("Enter choice: ");
+        try {
             choice = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input.");
+                continue;
+                }
             
             switch (choice) {
                 case 1 -> addPatient();
@@ -59,50 +68,54 @@ public class PatientBoundary {
                 case 6 -> checkInsurance();
                 case 7 -> exportMedicalReport();
                 case 0 -> exit();
-                default -> System.out.println("Invalid choice.");
+                default -> error("Invalid choice.");
             }
-        } while (choice !=0);
+        } while (choice !=0);  //if user enter 0 = exit, else continue loop
     } // close for the menu
     
     private void addPatient(){
         Patient patient = readPatientDetails();
+        
+        if (patient == null){
+            error("Add patient cancelled.");
+            pause();
+            return;
+        }
         controller.addPatient(patient);
         controller.saveFile();
         System.out.println("Patient added successfully.");
+        pause();
     }
     
     private void searchPatient(){
         System.out.print("Enter Patient ID to search: ");
-        String patientId = scanner.nextLine();
+        String patientId = scanner.nextLine().trim().toUpperCase();
         
-        Patient dummy = new Patient();
-        dummy.setPatientId(patientId);
-        
-        Patient found = controller.searchPatient(dummy);
+        Patient found = controller.searchPatientById(patientId);
         
         if(found != null){
             printHeader();
             System.out.print(found);
         }else{
-            System.out.println("Patient not found.");
+           error("Patient not found.");
         }
+        
+        pause();
     }
     
     private void updatePatient() {
     System.out.print("Enter Patient ID to update: ");
     String patientId = scanner.nextLine().trim().toUpperCase();
 
-    Patient dummy = new Patient();
-    dummy.setPatientId(patientId);
-
-    Patient found = controller.searchPatient(dummy);
+    Patient found = controller.searchPatientById(patientId);
 
     if (found == null) {
-        System.out.println("Patient not found.");
+        error("Patient not found.");
+        pause();
         return;
     }
 
-    int choice;
+    int choice = -1;
 
     do {
         System.out.println("\nCurrent Patient Details:");
@@ -120,14 +133,19 @@ public class PatientBoundary {
         System.out.println("8. Medical History");
         System.out.println("0. Finish Update");
         System.out.print("Enter choice: ");
-
-        choice = Integer.parseInt(scanner.nextLine());
+       
+        try {
+            choice = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+           error("Invalid input.");
+           continue;
+        }
 
         switch (choice) {
             case 1 -> {
                 String name = inputValidName("New Name: ");
                 if (controller.nameExists(name)) {
-                    System.out.println("Warning: A patient with the same name already exists.");
+                    error("Warning: A patient with the same name already exists.");
                 }
                 found.setName(name);
             }
@@ -159,7 +177,7 @@ public class PatientBoundary {
                 System.out.println("Patient information updated successfully.");
             }
 
-            default -> System.out.println("Invalid choice.");
+            default -> error("Invalid choice.");
         }
 
     } while (choice != 0);
@@ -182,26 +200,26 @@ public class PatientBoundary {
     }
     
     private void deletePatient() {
-        System.out.print("Enter Patient ID to delete: ");
-        String patientId = scanner.nextLine();
+    System.out.print("Enter Patient ID to delete: ");
+    String patientId = scanner.nextLine().trim().toUpperCase();
 
-        Patient dummy = new Patient();
-        dummy.setPatientId(patientId);
+    boolean deleted = controller.deletePatientById(patientId);
 
-        boolean deleted = controller.deletePatient(dummy);
+    if (deleted) {
+        controller.saveFile();
+        System.out.println("Patient deleted successfully.");
+    } else {
+        error("Patient not found.");
+    }
 
-        if (deleted) {
-            controller.saveFile();
-            System.out.println("Patient deleted successfully.");
-        } else {
-            System.out.println("Patient not found.");
-        }
+    pause();
     }
     
     
     private void displayPatients() {
     if (controller.getTotalPatients() == 0) {
-        System.out.println("No patient records found.");
+        error("No patient records found.");
+        pause();
         return;
     }
 
@@ -210,8 +228,15 @@ public class PatientBoundary {
     System.out.println("2. Sort by Patient ID");
     System.out.println("3. Sort by Patient Name");
     System.out.print("Enter choice: ");
-
-    int choice = Integer.parseInt(scanner.nextLine());
+    
+    int choice;
+          try {
+            choice = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+           error("Invalid input.");
+           pause();
+           return;
+        }
 
     switch (choice) {
         case 1 -> {
@@ -226,87 +251,78 @@ public class PatientBoundary {
             System.out.println("Patients sorted by Patient Name.");
         }
         default -> {
-            System.out.println("Invalid choice.");
+            error("Invalid choice.");
+            pause();
             return;
         }
     }
 
     printHeader();
-    System.out.println(controller.displayPatients());
+    System.out.print(controller.displayPatients());
     System.out.println("Total Patients: " + controller.getTotalPatients());
-}
-
-    private void sortPatients() {
-    System.out.println("Sort by:");
-    System.out.println("1. Patient ID");
-    System.out.println("2. Patient Name");
-    System.out.print("Enter choice: ");
-    
-    int choice = Integer.parseInt(scanner.nextLine());
-
-    switch (choice) {
-        case 1 -> {
-            controller.sortPatients(Comparator.comparing(Patient::getPatientId));
-            System.out.println("Patients sorted by Patient ID.");
-        }
-        case 2 -> {
-            controller.sortPatients(Comparator.comparing(Patient::getName, String.CASE_INSENSITIVE_ORDER));
-            System.out.println("Patients sorted by Name.");
-        }
-        default -> {
-            System.out.println("Invalid choice.");
-            return;
-        }
-    }
-    System.out.println("Current list order updated.");
+    pause();
 }
 
     private void checkInsurance() {
-        System.out.print("Enter Patient ID to check insurance: ");
-        String patientId = scanner.nextLine();
+    System.out.print("Enter Patient ID to check insurance: ");
+    String patientId = scanner.nextLine().trim().toUpperCase();
 
-        Patient dummy = new Patient();
-        dummy.setPatientId(patientId);
+    Patient found = controller.searchPatientById(patientId);
 
-        Patient found = controller.searchPatient(dummy);
+    if (found != null) {
+        System.out.println("\n=== Patient Insurance Information ===");
+        System.out.println("Patient ID   : " + found.getPatientId());
+        System.out.println("Name         : " + found.getName());
+        System.out.println("Nationality  : " + found.getNationality());
+        System.out.println("Patient Type : " + found.getPatientType());
 
-        if (found != null) {
-            if (controller.isInsuranceEligible(found)) {
-                System.out.println(found.getName() + " is eligible for local insurance checking.");
+        if (controller.isEligibleForLocalInsurance(found)) {
+            if (found.getPatientType().equalsIgnoreCase("Emergency")) {
+                System.out.println("Status       : Emergency case. Treatment first, insurance will be verified later.");
             } else {
-                System.out.println(found.getName() + " is a non-Malaysian patient. Passport/international insurance applies.");
+                System.out.println("Status       : Eligible for local insurance checking.");
             }
         } else {
-            System.out.println("Patient not found.");
+            System.out.println("Status       : Non-Malaysian patient. Passport/international insurance applies.");
         }
+
+        } else {
+        error("Patient not found.");
+         }
+
+    pause();
     }
 
     private void exportMedicalReport() {
     System.out.print("Enter Patient ID: ");
-    String patientId = scanner.nextLine();
+    String patientId = scanner.nextLine().trim().toUpperCase();
 
-    Patient dummy = new Patient();
-    dummy.setPatientId(patientId);
-
-    Patient found = controller.searchPatient(dummy);
+    Patient found = controller.searchPatientById(patientId);
 
     if (found != null) {
         controller.exportMedicalReport(found);
     } else {
-        System.out.println("Patient not found.");
+        error("Patient not found.");
     }
+    pause();
 }
     
-private Patient readPatientDetails() {
+    private Patient readPatientDetails() {
     Patient patient = new Patient();
 
     String newPatientId = controller.generateNextPatientId();
     System.out.println("Generated Patient ID: " + newPatientId);
     patient.setPatientId(newPatientId);
 
-    String name = inputValidName("Name: ");
+    String name = inputValidName("Name (or type 0 to cancel): ");
+    if(name == null){
+        return null;
+    }
+    
+    patient.setName(name);
+    
     if (controller.nameExists(name)) {
-        System.out.println("Warning: A patient with the same name already exists. Please check to avoid duplicate record.");
+        error("Warning: A patient with the same name already exists. Please check to avoid duplicate record.");
     }
     patient.setName(name);
 
@@ -328,44 +344,8 @@ private Patient readPatientDetails() {
     }
 
     patient.setPatientType(inputValidPatientType("Patient Type (Emergency / Normal): "));
-    patient.setAllergyInfo(inputNonEmpty("Allergy Info: "));
-    patient.setMedicalHistory(inputNonEmpty("Medical History: "));
-
-    return patient;
-}
-
-//UPDATE PATIENT DETAILS
-private Patient readUpdatedPatientDetails(String patientId) {
-    Patient patient = new Patient();
-    patient.setPatientId(patientId); // keep same ID
-
-    String name = inputValidName("Name: ");
-    if (controller.nameExists(name)) {
-        System.out.println("Warning: A patient with the same name already exists.");
-    }
-    patient.setName(name);
-
-    patient.setAge(inputValidAge("Age: "));
-    patient.setGender(inputValidGender("Gender (Male/Female): "));
-
-    patient.setContactNumber(inputValidContactUpdate("Contact Number: ", patientId));
-
-    String nationality = inputValidNationality("Nationality (Malaysian / Non-Malaysian): ");
-    patient.setNationality(nationality);
-
-    if (nationality.equalsIgnoreCase("Malaysian")) {
-        patient.setIdType("IC");
-        System.out.println("ID Type: IC");
-        patient.setIdNumber(inputValidICUpdate("IC Number: ", patientId));
-    } else {
-        patient.setIdType("Passport");
-        System.out.println("ID Type: Passport");
-        patient.setIdNumber(inputValidPassportUpdate("Passport Number: ", patientId));
-    }
-
-    patient.setPatientType(inputValidPatientType("Patient Type (Emergency / Normal): "));
-    patient.setAllergyInfo(inputNonEmpty("Allergy Info: "));
-    patient.setMedicalHistory(inputNonEmpty("Medical History: "));
+    patient.setAllergyInfo(inputNoneMsg("Allergy Info: "));
+    patient.setMedicalHistory(inputNoneMsg("Medical History: "));
 
     return patient;
 }
@@ -376,16 +356,38 @@ private Patient readUpdatedPatientDetails(String patientId) {
                 "ID TYPE", "ID NUMBER", "TYPE", "ALLERGY", "HISTORY");
     }
     
-    //VALIDATION FOR INPUT OF PATIENT DETAILS
+    //VALIDATION FOR INPUT OF PATIENT DETAILS, show empty error msg,enter 0 to exit
     private String inputNonEmpty(String message) {
+    String input;
+    do {
+        System.out.print(message + " (or type 0 to cancel): ");
+        input = scanner.nextLine().trim();
+
+        if (input.equals("0")) {
+            return null; // cancel signal
+        }
+
+        if (input.isEmpty()) {
+            System.out.println("Input cannot be empty.");
+        }
+
+    } while (input.isEmpty());
+
+    return input;
+    }
+    
+    private String inputNoneMsg(String message) {
     String input;
     do {
         System.out.print(message);
         input = scanner.nextLine().trim();
+
         if (input.isEmpty()) {
-            System.out.println("Input cannot be empty.");
+            error("Input cannot be empty. Please enter 'None' if there is no information.");
         }
+
     } while (input.isEmpty());
+
     return input;
     }
     
@@ -396,11 +398,15 @@ private Patient readUpdatedPatientDetails(String patientId) {
         System.out.print(message);
         name = scanner.nextLine().trim();
 
+        if (name.equals("0")){
+            return null;
+        }
+        
         if (!name.matches("^[A-Za-z]+(\\s[A-Za-z]+)+$")) {
-            System.out.println("Invalid name. Use letters and at least 2 words.");
+            error("Invalid name. Use letters and at least 2 words.");
         } 
         else if (name.length() < 3) {
-            System.out.println("Name too short.");
+            error("Name too short.");
         }
         else {
             return name;
@@ -410,25 +416,24 @@ private Patient readUpdatedPatientDetails(String patientId) {
     }
     
     private int inputValidAge(String message) {
-    int age = -1;
-    boolean valid = false;
+    int age;
 
-    do {
+    while (true) {
         try {
             System.out.print(message);
             age = Integer.parseInt(scanner.nextLine());
-            if (age >= 1 && age <= 110) {
-                valid = true;
-            } else {
-                System.out.println("Age must be between 1 and 120.");
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid age. Please enter a number.");
-        }
-    } while (!valid);
 
-    return age;
+            if (age >= 1 && age <= 110) {
+                return age;   // ✅ return immediately when valid
+            } else {
+                error("Age must be between 1 and 110.");
+            }
+
+        } catch (NumberFormatException e) {
+            error("Invalid age. Please enter a number.");
+        }
     }
+}
     
     private String inputValidGender(String message) {
     String gender;
@@ -436,7 +441,7 @@ private Patient readUpdatedPatientDetails(String patientId) {
         System.out.print(message);
         gender = scanner.nextLine().trim();
         if (!gender.equalsIgnoreCase("Male") && !gender.equalsIgnoreCase("Female")) {
-            System.out.println("Invalid gender. Enter Male or Female only.");
+            error("Invalid gender. Enter Male or Female only.");
         }
     } while (!gender.equalsIgnoreCase("Male") && !gender.equalsIgnoreCase("Female"));
     return gender;
@@ -450,9 +455,9 @@ private Patient readUpdatedPatientDetails(String patientId) {
         contact = scanner.nextLine().trim();
 
         if (!contact.matches("01\\d{8,9}")) {
-            System.out.println("Invalid contact number. Use Malaysian format, e.g. 0123456789.");
+            error("Invalid contact number. Use Malaysian format, e.g. 0123456789.");
         } else if (controller.contactNumberExists(contact)) {
-            System.out.println("Contact number already exists. Please enter another number.");
+            error("Contact number already exists. Please enter another number.");
         } else {
             return contact;
         }
@@ -467,7 +472,7 @@ private Patient readUpdatedPatientDetails(String patientId) {
         nationality = scanner.nextLine().trim();
         if (!nationality.equalsIgnoreCase("Malaysian") &&
             !nationality.equalsIgnoreCase("Non-Malaysian")) {
-            System.out.println("Invalid nationality. Enter Malaysian or Non-Malaysian only.");
+            error("Invalid nationality. Enter Malaysian or Non-Malaysian only.");
         }
     } while (!nationality.equalsIgnoreCase("Malaysian") &&
              !nationality.equalsIgnoreCase("Non-Malaysian"));
@@ -482,9 +487,9 @@ private Patient readUpdatedPatientDetails(String patientId) {
         ic = scanner.nextLine().trim();
 
         if (!ic.matches("\\d{6}-\\d{2}-\\d{4}")) {
-            System.out.println("Invalid IC format. Example: 010101-10-1234");
+            error("Invalid IC format. Example: 010101-10-1234");
         } else if (controller.idNumberExists(ic)) {
-            System.out.println("IC number already exists. Duplicate patient record is not allowed.");
+            error("IC number already exists. Duplicate patient record is not allowed.");
         } else {
             return ic;
         }
@@ -500,9 +505,9 @@ private Patient readUpdatedPatientDetails(String patientId) {
         passport = scanner.nextLine().trim();
 
         if (passport.isEmpty()) {
-            System.out.println("Passport number cannot be empty.");
+            error("Passport number cannot be empty.");
         } else if (controller.idNumberExists(passport)) {
-            System.out.println("Passport number already exists. Duplicate patient record is not allowed.");
+            error("Passport number already exists. Duplicate patient record is not allowed.");
         } else {
             return passport;
         }
@@ -517,7 +522,7 @@ private Patient readUpdatedPatientDetails(String patientId) {
         System.out.print(message);
         type = scanner.nextLine().trim();
         if (!type.equalsIgnoreCase("Emergency") && !type.equalsIgnoreCase("Normal")) {
-            System.out.println("Invalid patient type. Enter Emergency or Normal only.");
+            error("Invalid patient type. Enter Emergency or Normal only.");
         }
     } while (!type.equalsIgnoreCase("Emergency") && !type.equalsIgnoreCase("Normal"));
     return type;
@@ -532,9 +537,9 @@ private Patient readUpdatedPatientDetails(String patientId) {
         contact = scanner.nextLine().trim();
 
         if (!contact.matches("01\\d{8,9}")) {
-            System.out.println("Invalid contact number. Example: 0123456789");
+            error("Invalid contact number. Example: 0123456789");
         } else if (controller.contactNumberExistsExcept(contact, patientId)) {
-            System.out.println("Contact number already exists. Please enter another number.");
+            error("Contact number already exists. Please enter another number.");
         } else {
             return contact;
         }
@@ -550,9 +555,9 @@ private Patient readUpdatedPatientDetails(String patientId) {
         ic = scanner.nextLine().trim();
 
         if (!ic.matches("\\d{6}-\\d{2}-\\d{4}")) {
-            System.out.println("Invalid IC format. Example: 010101-10-1234");
+            error("Invalid IC format. Example: 010101-10-1234");
         } else if (controller.idNumberExistsExcept(ic, patientId)) {
-            System.out.println("IC already exists.");
+            error("IC already exists.");
         } else {
             return ic;
         }
@@ -568,9 +573,9 @@ private Patient readUpdatedPatientDetails(String patientId) {
         passport = scanner.nextLine().trim();
 
         if (passport.isEmpty()) {
-            System.out.println("Passport cannot be empty.");
+            error("Passport cannot be empty.");
         } else if (controller.idNumberExistsExcept(passport, patientId)) {
-            System.out.println("Passport already exists.");
+            error("Passport already exists.");
         } else {
             return passport;
         }
@@ -594,4 +599,8 @@ private Patient readUpdatedPatientDetails(String patientId) {
         System.out.println("Exiting...");
         saveFile();
     }
+    
+    private void error(String message) {
+    System.out.println(RED + message + RESET);
+}
 }

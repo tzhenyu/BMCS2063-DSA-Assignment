@@ -26,12 +26,19 @@ public interface ListADTInterface<T> extends Iterable<T>{
     boolean remove(T element);
 
     /**
+    * Retrieves an element at a given position.
+    * PRE: index is valid
+    * POST: returns the element at the specified index
+    */
+    T getEntry(int index);
+    /**
      * Searches for an element by key or object
      * @param element element to search for
      * @return the element if found, null otherwise
      */
     T search(T element);
 
+    
     /**
      * Returns the number of elements in the list
      */
