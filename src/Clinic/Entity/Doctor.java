@@ -9,7 +9,7 @@ package Clinic.Entity;
  * @author ASUS
  */
 import ListADT.ListADT;
-import ListADT.ListADTInterface;
+import ListADT.List;
 
 public class Doctor implements Comparable<Doctor> {
     private String doctorId;

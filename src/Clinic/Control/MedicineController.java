@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
@@ -45,6 +44,7 @@ public class MedicineController implements FileHandler {
     }
     
     public boolean deleteMedicineByName(String name) {
+        //Just delete with matched name
        Medicine dummyMedicine = new Medicine(name, null, 0, null, null, null);
        return medicineList.remove(dummyMedicine);
     }
@@ -76,18 +76,21 @@ public class MedicineController implements FileHandler {
         medicineList.sort(by);
     }
     
-    public ListADT<Medicine> searchMedicineByQuery(String query) {
-    ListADT<Medicine> searchResults = new ListADT<>();
-
-    for (Medicine m : medicineList) {
-        if (m.getName().toLowerCase().contains(query.toLowerCase()) ||
-            m.getDescription().toLowerCase().contains(query.toLowerCase()) ||
-            m.getRegistrationNumber().toLowerCase().contains(query.toLowerCase())) {
-            searchResults.insert(m);
+    // Helper method to get all medicines matching the query
+    private ListADT<Medicine> getMedicinesByQuery(String query) {
+        ListADT<Medicine> results = new ListADT<>();
+        for (Medicine m : medicineList) {
+            if (m.getName().toLowerCase().contains(query.toLowerCase()) ||
+                m.getDescription().toLowerCase().contains(query.toLowerCase()) || 
+                m.getRegistrationNumber().toLowerCase().contains(query.toLowerCase())) {
+                results.insert(m);
+            }
         }
+        return results;
     }
-
-    return searchResults;
+    
+    public boolean searchMedicineByQuery(String query) {
+        return getMedicinesByQuery(query).size() > 0;
     }
     
     @Override
@@ -198,25 +201,24 @@ public class MedicineController implements FileHandler {
         // enter to continue, referenced from https://stackoverflow.com/questions/26184409/java-console-prompt-for-enter-input-before-moving-on
         DateTimeFormatter lastUpdateDateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-        boolean foundAtLeastOne = false;
         Scanner scanner = new Scanner(System.in);
-        
         
         System.out.println("--- Search Results for: " + query + " ---");
         System.out.printf(ROW_FORMAT, "NAME", "DESCRIPTION", "QUANTITY", "REG. NUM", "EXPIRY DATE", "LAST UPDATED");
 
-        // 1. Walk through your main list
-        for (Medicine m : medicineList) {
-            //Format the date
-            String formattedDate = m.getLastUpdated().format(lastUpdateDateFormatter);
-            System.out.printf(ROW_FORMAT, m.getName(), m.getDescription(), m.getQuantity(), m.getRegistrationNumber(), m.getExpiryDate(), formattedDate);
-        }
-
-        if (!foundAtLeastOne) {
+        // Get matching medicines using the helper method
+        ListADT<Medicine> results = getMedicinesByQuery(query);
+        
+        if (results.size() == 0) {
             System.out.println(ANSI_RED + "No matches found." + ANSI_RESET);
+        } else {
+            for (Medicine m : results) {
+                String formattedDate = m.getLastUpdated().format(lastUpdateDateFormatter);
+                System.out.printf(ROW_FORMAT, m.getName(), m.getDescription(), m.getQuantity(), m.getRegistrationNumber(), m.getExpiryDate(), formattedDate);
+            }
         }
         
-        System.out.println("Enter to continue...");
+        System.out.print("Enter to continue...");
         scanner.nextLine();
     }
 

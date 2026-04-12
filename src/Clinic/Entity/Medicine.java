@@ -119,7 +119,7 @@ public class Medicine implements Comparable<Medicine>, CSVHandler<Medicine> {
         
         Medicine otherMedicine = (Medicine) obj;
         // Compare them based on their name (ignoring uppercase/lowercase)
-        return this.registrationNum.equalsIgnoreCase(otherMedicine.registrationNum);
+        return this.name.equalsIgnoreCase(otherMedicine.name);
     }
 
     @Override
