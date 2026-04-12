@@ -1,10 +1,11 @@
 PATIENT ID;NAME;AGE;GENDER;CONTACT NUMBER;NATIONALITY;ID TYPE;ID NUMBER;PATIENT TYPE;ALLERGY INFO;MEDICAL HISTORY
-P0001;Chieng;100;male;0124563987;malaysian;IC;200510-13-6459;emergency;none;none
-P0002;Katie Chieng;18;female;0123456789;Malaysian;IC;950710-13-7894;Emergency;Allergy to paracetemol;Diabetes
-P0003;John Tan;45;male;0135678921;Malaysian;IC;780312-10-4567;Outpatient;None;Hypertension
-P0004;Aisyah Rahman;30;female;0178899234;Malaysian;IC;930821-14-3321;Emergency;Allergy to seafood;Asthma
-P0005;Wei Ming;25;male;0167788990;Malaysian;Passport;A12345678;Outpatient;None;None
-P0006;Siti Nur;60;female;0193344556;Malaysian;IC;640112-08-9876;Inpatient;Allergy to penicillin;Heart Disease
-P0007;Arjun Kumar;50;male;0182233445;Indian;Passport;N98765432;Emergency;None;High Blood Pressure
-P0008;Lim Jia Yi;22;female;0145566778;Malaysian;IC;030415-12-5566;Outpatient;Allergy to nuts;None
+P0004;Aisyah Rahman;30;Female;0178899234;Malaysian;IC;930821-14-3321;Emergency;Allergy to seafood;Asthma
+P0007;Arjun Kumar;50;Male;0182233445;Indian;Passport;N98765432;Normal;None;High Blood Pressure
+P0001;Jason Ngu;100;Male;0124563987;Malaysian;IC;200510-13-6459;Emergency;none;none
+P0003;John Tan;45;Male;0135678921;Malaysian;IC;780312-10-4567;Normal;None;Hypertension
+P0011;Kat Chieng;15;Female;01237894560;Malaysian;IC;950810-15-6748;Emergency;None;None
+P0002;Katie Chieng;18;Female;0123456789;Malaysian;IC;950710-13-7894;Emergency;Allergy to paracetemol;Diabetes
 P0009;Katie Chieng;18;Female;0124567895;Non-Malaysian;Passport;0123456987;Emergency;None;None
+P0008;Lim Jia Yi;22;Female;0145566778;Malaysian;IC;030415-12-5566;Normal;Allergy to nuts;None
+P0006;Siti Nur;60;Female;0193344556;Malaysian;IC;640112-08-9876;Normal;Allergy to penicillin;Heart Disease
+P0005;Wei Ming;25;Male;0167788990;Malaysian;Passport;A12345678;Normal;None;None

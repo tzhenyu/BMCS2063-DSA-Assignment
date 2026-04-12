@@ -11,8 +11,8 @@ import StorageHandler.CSVHandler;
  */
 
 
-public class Patient implements Comparable<Patient> , CSVHandler<Patient> {
-
+    public class Patient implements Comparable<Patient> , CSVHandler<Patient> {
+    
     private String patientId;
     private String name;
     private int age;
@@ -147,9 +147,10 @@ public class Patient implements Comparable<Patient> , CSVHandler<Patient> {
 
    @Override
     public String toString() {
-        return String.format("| %-8s | %-20s | %-3d | %-8s | %-13s | %-12s | %-10s | %-15s | %-12s | %-15s | %-20s |%n",
-                patientId, name, age, gender, contactNumber, nationality,
-                idType, idNumber, patientType, allergyInfo, medicalHistory);
+        return String.format(
+                "| %-6s | %-20s | %-3d | %-6s | %-12s | %-12s | %-10s | %-15s | %-10s | %-20s | %-20s |\n",
+                patientId,name,age,gender,contactNumber,nationality,idType,idNumber,patientType,allergyInfo,medicalHistory
+        );
     }
     
     @Override  // use to store the object internally? just for completeness not need for our ADT
@@ -168,7 +169,14 @@ public class Patient implements Comparable<Patient> , CSVHandler<Patient> {
     public Patient fromCSV(String[] fields) {
     String patientId = fields[0].trim();
     String name = fields[1].trim();
-    int age = Integer.parseInt(fields[2].trim());
+    
+   int age = 0;
+   try {
+        age = Integer.parseInt(fields[2].trim());
+        } catch (NumberFormatException e) {
+        age = 0;
+    }
+    
     String gender = fields[3].trim();
     String contactNumber = fields[4].trim();
     String nationality = fields[5].trim();
