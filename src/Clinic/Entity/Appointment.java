@@ -4,78 +4,124 @@
  */
 package Clinic.Entity;
 
+import StorageHandler.CSVHandler;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 /**
  *
  * @author ASUS
  */
 
-public class Appointment implements Comparable<Appointment> {
-
+public class Appointment implements Comparable<Appointment>, CSVHandler<Appointment> {
+    private String appointmentId;
     private String patientId;
-    private String doctorId;
-    private String date; // format: YYYY-MM-DD
-    private String time; // format: 10-11
+    private LocalDate date;
+    private String time;
+    private String purpose; 
+    private String remarks;
 
-    public Appointment(String patientId, String doctorId,
-                       String date, String time) {
+    public Appointment() {}
+
+    
+    public Appointment(String appointmentId, String patientId, LocalDate date, String time, String purpose, String remarks) {
+        this.appointmentId = appointmentId;
         this.patientId = patientId;
-        this.doctorId = doctorId;
         this.date = date;
+        this.time = time;
+        this.purpose = purpose;
+        this.remarks = remarks;
+    }
+
+    public String getAppointmentId() {
+        return appointmentId;
+    }
+
+    public void setAppointmentId(String appointmentId) {
+        this.appointmentId = appointmentId;
+    }
+
+    public String getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
         this.time = time;
     }
 
-    // ==========================
-    // GETTERS
-    // ==========================
-    public String getPatientId() { return patientId; }
-    public String getDoctorId() { return doctorId; }
-    public String getDate() { return date; }
-    public String getTime() { return time; }
+    public String getPurpose() {
+        return purpose;
+    }
 
-    // ==========================
-    // COMPARABLE (IMPORTANT)
-    // ==========================
+    public void setPurpose(String purpose) {
+        this.purpose = purpose;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    public String toCSV() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        
+        return appointmentId + ";" + patientId + ";" + date.format(formatter) + ";" + time +  ";" + purpose + ";" + remarks;
+    }
+
+    public Appointment fromCSV(String[] fields) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        
+        String appointmentId = fields[0].trim();
+        String patientId = fields[1].trim();
+        LocalDate date = LocalDate.parse(fields[2].trim(), formatter);
+        String time = fields[3].trim();
+        String purpose = fields[4].trim();
+        String remarks = fields[5].trim();
+        
+        return new Appointment(appointmentId, patientId, date, time, purpose, remarks);
+    }
+
     @Override
     public int compareTo(Appointment other) {
-
-        // 1. Compare date first
-        int dateCompare = this.date.compareTo(other.date);
-        if (dateCompare != 0) {
-            return dateCompare;
-        }
-
-        // 2. Compare time (start hour only)
-        int thisTime = extractStartHour(this.time);
-        int otherTime = extractStartHour(other.time);
-
-        return Integer.compare(thisTime, otherTime);
+        return this.appointmentId.compareToIgnoreCase(other.appointmentId);
     }
 
-    // helper method
-    private int extractStartHour(String time) {
-        // "10-11" → 10
-        return Integer.parseInt(time.split("-")[0]);
-    }
-
-    // ==========================
-    // toString
-    // ==========================
     @Override
     public String toString() {
-        return patientId + " -> " + doctorId + " (" + date + " " + time + ")";
+        return String.format("| %-8s | %-8s | %-10s | %-5s | %-10s | %-15s |\n",appointmentId, patientId, date, time,purpose, remarks);
     }
-
-    // ==========================
-    // equals (VERY IMPORTANT)
-    // ==========================
+    
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Appointment)) return false;
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
 
         Appointment other = (Appointment) obj;
 
-        return this.patientId.equals(other.patientId)
-                && this.date.equals(other.date)
-                && this.time.equals(other.time);
+        return this.appointmentId != null && this.appointmentId.equals(other.appointmentId);
     }
+    
+    
+    
+    
+   
 }

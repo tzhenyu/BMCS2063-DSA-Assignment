@@ -4,117 +4,141 @@
  */
 package Clinic.Entity;
 
+import java.time.*;
+
 /**
  *
- * @author ASUS
+ * @author jon
  */
-import ListADT.ListADT;
-import ListADT.List;
-
-public class Doctor implements Comparable<Doctor> {
-    private String doctorId;
-    private String name;
+public class Doctor extends Staff { //Staff already implements Comparable<> and CSVHandler<>
+    private String regNum;
     private String specialization;
-    private String phone;
-    private String email;
     private String availability; // e.g. "Mon-Fri 10AM-5PM"
     private boolean isAvailable;
-
-    // Constructor
-    public Doctor(String doctorId, String name, String specialization,
-                  String phone, String email, String availability, boolean isAvailable) {
-        this.doctorId = doctorId;
-        this.name = name;
+    private String licenseNum;
+    private LocalDate licenseExpDate; //set as date datatype
+    
+    public static boolean searchByRegMode = false; //Flag for special search
+    
+    // Only for FileHandler use
+    public Doctor(){}
+    
+    // Modified constructor to implement properties of Staff class
+    public Doctor(String name, String phoneNum, String email, String icNumber, 
+            String employmentType,LocalDate hireDate, String regNum, 
+            String specialization, String availability, String licenseNum,
+            LocalDate licenseExpDate) {
+        super(name, phoneNum, email, icNumber, employmentType, hireDate, "D-");
+        this.regNum = regNum;
         this.specialization = specialization;
-        this.phone = phone;
-        this.email = email;
+        this.availability = availability;
+        this.isAvailable = true;
+        this.licenseNum = licenseNum;
+        this.licenseExpDate = licenseExpDate;
+    }
+    
+    // For CSVHandler use
+    protected Doctor(String staffId, String name, String phoneNum, String email,
+            String icNumber, String employmentType, String status, 
+            LocalDate hireDate, String regNum, String specialization, 
+            String availability, boolean isAvailable, String licenseNum, 
+            LocalDate licenseExpDate){
+        super(staffId, name, phoneNum, email, icNumber, employmentType, status, hireDate);
+        this.regNum = regNum;
+        this.specialization = specialization;
         this.availability = availability;
         this.isAvailable = isAvailable;
+        this.licenseNum = licenseNum;
+        this.licenseExpDate = licenseExpDate;
+        
     }
 
-    // Getters
+    public String getRegNum() {return regNum;}
+    public String getSpecialization() {return specialization;}
+    public String getAvailability() {return availability;}
+    public boolean isIsAvailable() {return isAvailable;}
+    public String getLicenseNum() {return licenseNum;}
+    public LocalDate getLicenseExpDate() {return licenseExpDate;}
 
-    public String getDoctorId() {
-        return doctorId;
+    public void setRegNum(String regNum) {
+        this.regNum = regNum;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getSpecialization() {
-        return specialization;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getAvailability() {
-        return availability;
-    }
-
-    public boolean isIsAvailable() {
-        return isAvailable;
-    }
-    
-    
-    
-    // ETTERS
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public void setSpecialization(String specialization) {
         this.specialization = specialization;
     }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public void setAvailability(String availability) {
         this.availability = availability;
     }
-
-    // Setters
     public void setIsAvailable(boolean isAvailable) {
         this.isAvailable = isAvailable;
     }
-
-    // Sorting (by doctorId)
-    @Override
-    public int compareTo(Doctor other) {
-        return this.doctorId.compareTo(other.doctorId);
+    public void setLicenseNum(String licenseNum) {
+        this.licenseNum = licenseNum;
+    }
+    public void setLicenseExpDate(LocalDate licenseExpDate) {
+        this.licenseExpDate = licenseExpDate;
     }
 
-    // Equality (based on doctorId)
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Doctor)) return false;
-
-        Doctor other = (Doctor) obj;
-        return this.doctorId.equals(other.doctorId);
+    public String toCSV() {
+        return (super.toCSV() + ";" + regNum + ";" + specialization + ";" + 
+                availability + ";" + isAvailable + ";" + licenseNum + ";" +
+                String.valueOf(licenseExpDate));
     }
-
-    // Display
+    
+    @Override
+    public Doctor fromCSV(String[] field){
+        //for Staff class
+        String staffId = field[0].trim();
+        String name = field[1].trim();
+        String phoneNum = field[2].trim();
+        String email = field[3].trim();
+        String icNumber = field[4].trim();
+        String employmentType = field[5].trim();
+        String status = field[6].trim();
+        LocalDate hireDate = LocalDate.parse(field[7].trim());
+        
+        //for Doctor class
+        String regNum = field[8].trim();
+        String specialization = field[9].trim();
+        String availability = field[10].trim();
+        boolean isAvailable = Boolean.parseBoolean(field[11].trim());
+        String licenseNum = field[12].trim();
+        LocalDate licenseExpDate = LocalDate.parse(field[13].trim());        
+                
+        // Object Creation
+        // Return a brand new instance using the parsed data
+        return new Doctor(staffId,name,phoneNum,email,icNumber,employmentType,
+                status,hireDate,regNum,specialization,availability,isAvailable,
+                licenseNum,licenseExpDate);
+    }
+    
+    // Override and display super from Staff
     @Override
     public String toString() {
-        return "Doctor ID: " + doctorId +
-               ", Name: " + name +
-               ", Specialization: " + specialization +
-               ", Phone: " + phone +
-               ", Email: " + email +
-               ", Availability: " + availability +
-               ", Status: " + (isAvailable ? "Available" : "Not Available");
+        return super.toString() + 
+                "regNum: " + regNum + 
+                ", specialization: " + specialization + 
+                ", availability: " + availability + 
+                ", isAvailable: " + (isAvailable ? "Available" : "Not Available") + 
+                ", licenseNum: " + licenseNum + 
+                ", licenseExpDate: " + licenseExpDate + '}';
     }
+    
+    @Override
+    public int compareTo(Staff other) {
+        if (searchByRegMode && other instanceof Doctor) {
+            return this.regNum.compareToIgnoreCase(((Doctor) other).regNum);
+        }
+        return super.compareTo(other); // Fallback to Staff ID comparison
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (searchByRegMode && obj instanceof Doctor) {
+            return this.regNum.equalsIgnoreCase(((Doctor) obj).regNum);
+        }
+        return super.equals(obj);
+    }
+    
 }

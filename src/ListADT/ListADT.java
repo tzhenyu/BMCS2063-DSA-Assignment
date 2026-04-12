@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  */
 
 
-public class ListADT<T extends Comparable<T>> implements List<T>{
+public class ListADT<T extends Comparable<T>> implements ListADTInterface<T>{
     
     // We develop "circular" linked list with "dummy" node
     // What is dummy node? check here https://www.youtube.com/watch?v=aloIxnZ4EvY

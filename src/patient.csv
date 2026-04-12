@@ -1,16 +1,11 @@
 PATIENT ID;NAME;AGE;GENDER;CONTACT NUMBER;NATIONALITY;ID TYPE;ID NUMBER;PATIENT TYPE;ALLERGY INFO;MEDICAL HISTORY
-P001;Ali bin Ahmad;20;Male;0123456789;Malaysian;IC;010101-10-1234;Normal;None;Asthma
-P002;John Smith;25;Male;0198765432;Non-Malaysian;Passport;A12345678;Emergency;Peanut;Diabetes
-P003;Siti Aisyah;22;Female;0171122334;Malaysian;IC;020202-08-5678;Normal;Penicillin;None
-P004;Mei Lin;30;Female;0169988776;Malaysian;IC;940303-14-2222;Emergency;None;Heart Disease
-P005;David Lee;28;Male;0188877665;Non-Malaysian;Passport;B99887766;Normal;Dust;Hypertension
-P006;Nur Farah;24;Female;0135566778;Malaysian;IC;990404-01-3344;Normal;None;Migraine
-P007;Ahmad Firdaus;35;Male;0146677889;Malaysian;IC;880505-05-5566;Emergency;Seafood;Hypertension
-P008;Emily Tan;27;Female;0129988776;Malaysian;IC;970606-14-7788;Normal;None;None
-P009;Michael Wong;40;Male;0193344556;Malaysian;IC;830707-10-1122;Emergency;Dust;Asthma
-P010;Aisyah Rahman;29;Female;0172233445;Malaysian;IC;950808-08-3344;Normal;Latex;None
-P011;Chen Wei;33;Male;0164455667;Non-Malaysian;Passport;C22334455;Normal;None;Diabetes
-P012;Kumar Raj;45;Male;0185566778;Malaysian;IC;780909-02-5566;Emergency;Penicillin;Heart Disease
-P013;Lim Jia Ying;21;Female;0126677889;Malaysian;IC;030101-14-7788;Normal;None;None
-P014;Suresh Kumar;38;Male;0197788990;Malaysian;IC;860202-05-9900;Emergency;Pollen;Asthma
-P015;Anna Lee;26;Female;0178899001;Non-Malaysian;Passport;D33445566;Normal;Gluten;None
+P0004;Aisyah Rahman;30;Female;0178899234;Malaysian;IC;930821-14-3321;Emergency;Allergy to seafood;Asthma
+P0007;Arjun Kumar;50;Male;0182233445;Indian;Passport;N98765432;Normal;None;High Blood Pressure
+P0001;Jason Ngu;100;Male;0124563987;Malaysian;IC;200510-13-6459;Emergency;none;none
+P0003;John Tan;45;Male;0135678921;Malaysian;IC;780312-10-4567;Normal;None;Hypertension
+P0011;Kat Chieng;15;Female;01237894560;Malaysian;IC;950810-15-6748;Emergency;None;None
+P0002;Katie Chieng;18;Female;0123456789;Malaysian;IC;950710-13-7894;Emergency;Allergy to paracetemol;Diabetes
+P0009;Katie Chieng;18;Female;0124567895;Non-Malaysian;Passport;0123456987;Emergency;None;None
+P0008;Lim Jia Yi;22;Female;0145566778;Malaysian;IC;030415-12-5566;Normal;Allergy to nuts;None
+P0006;Siti Nur;60;Female;0193344556;Malaysian;IC;640112-08-9876;Normal;Allergy to penicillin;Heart Disease
+P0005;Wei Ming;25;Male;0167788990;Malaysian;Passport;A12345678;Normal;None;None
