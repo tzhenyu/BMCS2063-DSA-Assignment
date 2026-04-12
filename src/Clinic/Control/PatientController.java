@@ -78,12 +78,85 @@ public class PatientController implements FileHandler{
         return patient.getNationality().equalsIgnoreCase("Malaysian");
     }
     
+    //CHECK for REPETITION
+    public boolean patientExists(String patientId) {
+    Patient dummy = new Patient();
+    dummy.setPatientId(patientId);
+    return patientList.search(dummy) != null;
+}
+    
+    public String generateNextPatientId() {
+    int max = 0;
+
+    for (Patient p : patientList) {
+        String id = p.getPatientId().substring(1); // remove 'P'
+        int num = Integer.parseInt(id);
+        if (num > max) {
+            max = num;
+        }
+    }
+
+    return String.format("P%04d", max + 1);
+    }
+    
+    public boolean nameExists(String name) {
+    for (Patient patient : patientList) {
+        if (patient.getName() != null && patient.getName().equalsIgnoreCase(name)) {
+            return true;
+        }
+    }
+    return false;
+    }
+    
+    public boolean idNumberExists(String idNumber) {
+    for (Patient patient : patientList) {
+        if (patient.getIdNumber() != null &&
+            patient.getIdNumber().equalsIgnoreCase(idNumber)) {
+            return true;
+        }
+    }
+    return false;
+    }
+    
+    public boolean contactNumberExists(String contactNumber) {
+    for (Patient patient : patientList) {
+        if (patient.getContactNumber() != null &&
+            patient.getContactNumber().equals(contactNumber)) {
+            return true;
+        }
+    }
+    return false;
+    }
+    
+    //For update Patient's details
+    public boolean idNumberExistsExcept(String idNumber, String patientId) {
+    for (Patient patient : patientList) {
+        if (!patient.getPatientId().equalsIgnoreCase(patientId) &&
+            patient.getIdNumber() != null &&
+            patient.getIdNumber().equalsIgnoreCase(idNumber)) {
+            return true;
+        }
+    }
+    return false;
+    }
+    
+    public boolean contactNumberExistsExcept(String contactNumber, String patientId) {
+    for (Patient patient : patientList) {
+        if (!patient.getPatientId().equalsIgnoreCase(patientId) &&
+            patient.getContactNumber() != null &&
+            patient.getContactNumber().equals(contactNumber)) {
+            return true;
+        }
+    }
+    return false;
+    }
+    
+    //Export Medical Report
     public void exportMedicalReport(Patient patient) {
     if (patient == null) {
         System.out.println("Patient not found.");
         return;
     }
-
     String filename = "src/report_" + patient.getPatientId() + ".txt";
     File reportFile = new File(filename);
 
@@ -109,7 +182,7 @@ public class PatientController implements FileHandler{
 }
     
     @Override
-public void loadFile() {
+    public void loadFile() {
     System.out.println("Loading from file: " + FILENAME);
     File csvFile = new File(FILENAME);
 
@@ -136,8 +209,8 @@ public void loadFile() {
     }
 }
 
-@Override
-public void saveFile() {
+    @Override
+    public void saveFile() {
     System.out.println("Saving file to: " + FILENAME);
     File csvFile = new File(FILENAME);
 
