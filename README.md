@@ -16,6 +16,8 @@ A console prototype of a clinic management system. Everything is stored in one c
 
 The team component (ADT specification and implementation) is the `ListADT` package.
 
+> Note: Teammates contributed their tasks and modules, but Tan Zhen Yu merged all contributions into this repository on GitHub, so the commit history shows him as the committer.
+
 ## The ADT: `ListADT<T>`
 
 A circular singly linked list with a dummy node. It implements `ListADTInterface<T>` (which extends `Iterable<T>`).
@@ -106,8 +108,3 @@ Data is loaded from CSV files in `src/` (semicolon-separated) and saved back whe
 | `appointment.csv` | Appointment bookings |
 | `medicine.csv` | Medicine stock |
 | `report_<PatientID>.txt` | Generated medical report (output) |
-
-## Known issues
-
-- `AppointmentController` imports `java.util.Stack` for the "latest appointments" feature. The assignment forbids Java Collections Framework classes, so this should be replaced with a stack built on `ListADT` before submission.
-- `Main` still contains commented-out scratch code.
